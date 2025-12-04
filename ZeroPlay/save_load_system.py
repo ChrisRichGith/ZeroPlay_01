@@ -42,10 +42,15 @@ def load_game(character_name):
             with open(filename, 'rb') as f:
                 character = pickle.load(f)
                 # Compatibility check for old saves
+                # Compatibility check for old saves
                 if not hasattr(character, 'resources'):
                     character.resources = {}
                 if not hasattr(character, 'main_stat'):
                     character.main_stat = CLASSES.get(character.klasse, {}).get("main_stat")
+                if not hasattr(character, 'is_immortal'):
+                    character.is_immortal = False
+                if not hasattr(character, 'bosses_defeated'):
+                    character.bosses_defeated = 0
                 return character
         except Exception as e:
             print(f"Fehler beim Laden von {character_name}: {e}")
