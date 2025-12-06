@@ -74,18 +74,36 @@ class Game:
         callbacks = {
             'game_over': self.handle_game_over_and_restart,
         }
+
+        # Check for any pending messages from the rebirth process
+        initial_messages = self.character.pending_unlock_messages
+        self.character.pending_unlock_messages = [] # Clear messages after retrieving
+
         # The RpgGui now takes the character object directly
-        self.switch_frame(RpgGui, character=self.character, callbacks=callbacks)
+        self.switch_frame(RpgGui, character=self.character, callbacks=callbacks, initial_messages=initial_messages)
 
-    def handle_game_over_and_restart(self):
-        """Deletes the save file of the dead character and returns to the start menu."""
-        save_file_path = os.path.join(SAVE_DIR, f"{self.character.name}.sav")
-        if os.path.exists(save_file_path):
-            os.remove(save_file_path)
-            print(f"Spielstand für {self.character.name} gelöscht.")
 
-        self.character = None
-        self.show_start_menu()
+    def handle_game_over_and_restart(self, death_by_boss):
+        """
+        Handles the game over logic.
+        - If death by boss: performs rebirth, saves, and restarts the game.
+        - If death by quest: deletes the save file and returns to the start menu.
+        """
+        if death_by_boss:
+            print(f"{self.character.name} wurde von einem Boss besiegt. Wiedergeburt wird eingeleitet.")
+            self.character.rebirth()
+            save_game(self.character)
+            # Reload the game screen with the reborn character
+            self.show_game()
+        else:
+            print(f"{self.character.name} ist bei einer Quest gestorben. Spielstand wird gelöscht.")
+            save_file_path = os.path.join(SAVE_DIR, f"{self.character.name}.sav")
+            if os.path.exists(save_file_path):
+                os.remove(save_file_path)
+                print(f"Spielstand für {self.character.name} gelöscht.")
+
+            self.character = None
+            self.show_start_menu()
 
     def on_closing(self):
         """Handles the main window closing event."""

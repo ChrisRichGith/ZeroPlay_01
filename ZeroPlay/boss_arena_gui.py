@@ -16,7 +16,7 @@ from loot_system import generate_boss_reward
 class BossArenaWindow(tk.Toplevel):
     """A Toplevel window for the boss fight."""
 
-    def __init__(self, parent, player, boss_data, item_level, on_close_callback=None):
+    def __init__(self, parent, player, boss_data, item_level, on_close_callback=None, rebirths=0):
         """Initializes the boss arena window."""
         super().__init__(parent)
         self.title("Boss Arena")
@@ -34,7 +34,8 @@ class BossArenaWindow(tk.Toplevel):
             hp=boss_data["hp"],
             damage_range=boss_data["damage"],
             image_path=boss_data["image_path"],
-            item_level=item_level
+            item_level=item_level,
+            rebirths=rebirths
         )
 
         self.is_player_turn = True
