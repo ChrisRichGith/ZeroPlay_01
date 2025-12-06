@@ -20,6 +20,7 @@ from highscore_manager import save_highscore
 from utils import format_currency, center_window
 from game_over_gui import GameOverWindow
 from game_data import BOSS_TIERS
+from translations import get_text
 
 # Liste verfügbarer Quests
 AVAILABLE_QUESTS = [
@@ -120,10 +121,14 @@ class RpgGui(ttk.Frame):
             for msg in initial_messages:
                 self.show_unlock_message(msg)
 
+    def _(self, key):
+        """Alias for get_text for shorter calls."""
+        return get_text(self.language, key)
+
     def show_unlock_message(self, message):
         """Shows a special message in the log for unlocks."""
         self.add_to_log(f"⭐ {message} ⭐")
-        messagebox.showinfo("Meilenstein freigeschaltet!", message, parent=self)
+        messagebox.showinfo(self._("milestone_unlocked"), message, parent=self)
 
     def handle_keypress(self, event):
         """Handles key presses for cheat codes."""
@@ -194,35 +199,36 @@ class RpgGui(ttk.Frame):
         self._create_log_frame(log_frame)
 
     def _create_character_frame(self, parent):
-        char_frame = ttk.LabelFrame(parent, text="Charakterstatus", padding="10")
+        char_frame = ttk.LabelFrame(parent, text=self._("char_status"), padding="10")
         char_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10), anchor='n')
-        char_frame.columnconfigure(2, weight=1) # Allow portrait column to expand
+        char_frame.columnconfigure(2, weight=1)
 
-        # --- Left side: Stats ---
-        labels = {"Name:": self.char_name_var, "Level:": self.char_level_var, "Item Level:": self.item_level_var, "Gold:": self.char_gold_var}
+        labels = {self._("name"): self.char_name_var, self._("level"): self.char_level_var, self._("item_level"): self.item_level_var, self._("gold"): self.char_gold_var}
         for i, (text, var) in enumerate(labels.items()):
-            ttk.Label(char_frame, text=text).grid(row=i, column=0, sticky="w")
+            ttk.Label(char_frame, text=f"{text}:").grid(row=i, column=0, sticky="w")
             ttk.Label(char_frame, textvariable=var).grid(row=i, column=1, sticky="w")
 
-        attr_frame = ttk.LabelFrame(char_frame, text="Attribute", padding="5")
+        attr_frame = ttk.LabelFrame(char_frame, text=self._("attributes"), padding="5")
         attr_frame.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(10, 0))
-        for i, (stat, var) in enumerate(self.stats_vars.items()):
-            ttk.Label(attr_frame, text=f"{stat}:").grid(row=i, column=0, sticky="w")
-            ttk.Label(attr_frame, textvariable=var).grid(row=i, column=1, sticky="w", padx=5)
 
-        # Resources Display
-        resources_frame = ttk.LabelFrame(char_frame, text="Ressourcen", padding="5")
+        self.stat_labels = {}
+        for i, stat_key in enumerate(['strength', 'intelligence', 'luck', 'agility']):
+            self.stat_labels[stat_key] = ttk.Label(attr_frame, text=f"{self._(stat_key)}:")
+            self.stat_labels[stat_key].grid(row=i, column=0, sticky="w")
+            ttk.Label(attr_frame, textvariable=self.stats_vars[self.player.main_stat] if stat_key == self.player.main_stat.lower() else self.stats_vars[stat_key]).grid(row=i, column=1, sticky="w", padx=5)
+
+
+        resources_frame = ttk.LabelFrame(char_frame, text=self._("resources"), padding="5")
         resources_frame.grid(row=4, column=0, columnspan=2, sticky="ew", pady=(10, 0))
-        self.resources_label = ttk.Label(resources_frame, text="Noch keine Ressourcen gesammelt.")
+        self.resources_label = ttk.Label(resources_frame, text=self._("no_resources"))
         self.resources_label.pack(fill=tk.X, expand=True)
 
-
         progress_bars_data = [
-            ("Lebenspunkte", "lp"),
-            ("Manapunkte", "mp"),
-            ("Energie", "energie"),
-            ("Wut", "wut"),
-            ("Erfahrung", "xp")
+            (self._("life_points"), "lp"),
+            (self._("mana_points"), "mp"),
+            (self._("energy"), "energie"),
+            (self._("rage"), "wut"),
+            (self._("experience"), "xp")
         ]
 
         for i, (text, var_name) in enumerate(progress_bars_data):
@@ -252,25 +258,25 @@ class RpgGui(ttk.Frame):
         except FileNotFoundError:
             self.portrait_label.config(text=f"Bild nicht\ngefunden:\n{self.player.image_path}")
         except Exception as e:
-            self.portrait_label.config(text=f"Fehler beim\nLaden des Bildes:\n{e}")
+            self.portrait_label.config(text=self._("image_load_error").format(e=e))
 
     def _create_actions_frame(self, parent):
-        actions_frame = ttk.LabelFrame(parent, text="Aktionen", padding="10")
+        actions_frame = ttk.LabelFrame(parent, text=self._("actions"), padding="10")
         actions_frame.pack(fill=tk.Y, expand=False, anchor='n')
 
-        self.quest_button = ttk.Button(actions_frame, text="Neue Quest beginnen", command=self.start_quest)
+        self.quest_button = ttk.Button(actions_frame, text=self._("start_quest"), command=self.start_quest)
         self.quest_button.pack(fill=tk.X, pady=5)
-        self.auto_quest_button = ttk.Button(actions_frame, text="Auto-Quest starten", command=self.toggle_auto_quest)
+        self.auto_quest_button = ttk.Button(actions_frame, text=self._("start_auto_quest"), command=self.toggle_auto_quest)
         self.auto_quest_button.pack(fill=tk.X, pady=5)
-        self.trader_button = ttk.Button(actions_frame, text="Händler besuchen", command=self.open_trader_window)
+        self.trader_button = ttk.Button(actions_frame, text=self._("visit_trader"), command=self.open_trader_window)
         self.trader_button.pack(fill=tk.X, pady=5)
-        self.blacksmith_button = ttk.Button(actions_frame, text="Schmied besuchen", command=self.open_blacksmith_window)
+        self.blacksmith_button = ttk.Button(actions_frame, text=self._("visit_blacksmith"), command=self.open_blacksmith_window)
         self.blacksmith_button.pack(fill=tk.X, pady=5)
-        self.boss_arena_button = ttk.Button(actions_frame, text="Boss Arena", command=self.open_boss_arena_window)
+        self.boss_arena_button = ttk.Button(actions_frame, text=self._("boss_arena"), command=self.open_boss_arena_window)
         self.boss_arena_button.pack(fill=tk.X, pady=5)
-        self.equip_button = ttk.Button(actions_frame, text="Gegenstand ausrüsten", command=self.equip_item)
+        self.equip_button = ttk.Button(actions_frame, text=self._("equip_item"), command=self.equip_item)
         self.equip_button.pack(fill=tk.X, pady=5)
-        self.use_button = ttk.Button(actions_frame, text="Gegenstand benutzen", command=self.use_item)
+        self.use_button = ttk.Button(actions_frame, text=self._("use_item"), command=self.use_item)
         self.use_button.pack(fill=tk.X, pady=5)
         self.progress_bar = ttk.Progressbar(actions_frame, orient='horizontal', mode='determinate', length=120)
         self.progress_bar.pack(fill=tk.X, pady=(10, 5))
@@ -279,18 +285,15 @@ class RpgGui(ttk.Frame):
         self.loot_status_text.pack(fill=tk.X, pady=5)
         self.loot_status_text.config(state=tk.DISABLED)
 
-        # Create a placeholder for the quest image to stabilize the layout
         self.placeholder_image = ImageTk.PhotoImage(Image.new('RGBA', (300, 200), (0, 0, 0, 0)))
         self.quest_image_label = ttk.Label(actions_frame, image=self.placeholder_image)
-        self.quest_image_label.image = self.placeholder_image # Keep a reference
+        self.quest_image_label.image = self.placeholder_image
         self.quest_image_label.pack(pady=10)
 
-
-        # Minigame Canvas
-        minigame_frame = ttk.LabelFrame(actions_frame, text="Ressourcenjagd", padding="5")
+        minigame_frame = ttk.LabelFrame(actions_frame, text=self._("resource_hunt"), padding="5")
         minigame_frame.pack(fill=tk.X, pady=(10, 0), expand=True)
 
-        self.minigame_toggle_button = ttk.Button(minigame_frame, text="Ressourcenjagd starten", command=self.toggle_minigame)
+        self.minigame_toggle_button = ttk.Button(minigame_frame, text=self._("start_resource_hunt"), command=self.toggle_minigame)
         self.minigame_toggle_button.pack(fill=tk.X, pady=(0, 5))
 
         self.minigame_canvas = tk.Canvas(minigame_frame, width=240, height=300, relief="sunken", borderwidth=1)
@@ -298,17 +301,14 @@ class RpgGui(ttk.Frame):
         self.minigame_canvas.bind("<Configure>", self._resize_minigame_background)
 
         try:
-            # Load the original background image. It will be resized and drawn by the event handler.
-            # Store the original PIL image to use for resizing later.
             self.minigame_bg_img_original_pil = Image.open("assets/minigame_background.png")
         except FileNotFoundError:
             self.minigame_bg_img_original_pil = None
-            self.minigame_canvas.config(bg="grey") # Fallback color
-
+            self.minigame_canvas.config(bg="grey")
 
     def _create_log_frame(self, parent):
         """Creates the quest log text widget."""
-        log_labelframe = ttk.LabelFrame(parent, text="Log", padding="10")
+        log_labelframe = ttk.LabelFrame(parent, text=self._("log"), padding="10")
         log_labelframe.pack(fill=tk.X, expand=True)
 
         log_labelframe.rowconfigure(0, weight=1)
@@ -324,25 +324,24 @@ class RpgGui(ttk.Frame):
     def _resize_minigame_background(self, event):
         """Resizes and redraws the minigame background image to fit the canvas."""
         if self.minigame_bg_img_original_pil:
-            # Resize the original image to the new canvas size
             resized_pil = self.minigame_bg_img_original_pil.resize((event.width, event.height))
-            # Convert to PhotoImage. Important: keep a reference!
             self.minigame_bg_img = ImageTk.PhotoImage(resized_pil)
-            # Redraw the image on the canvas
             self.minigame_canvas.create_image(0, 0, image=self.minigame_bg_img, anchor='nw')
 
     def _create_equipment_frame(self, parent):
         parent.columnconfigure(1, weight=1)
-        equip_frame = ttk.LabelFrame(parent, text="Angelegte Ausrüstung", padding="10")
+        equip_frame = ttk.LabelFrame(parent, text=self._("equipped_gear"), padding="10")
         equip_frame.pack(fill=tk.X, padx=10, pady=10)
+        self.slot_labels = {}
         for i, (slot, var) in enumerate(self.equipment_vars.items()):
-            ttk.Label(equip_frame, text=f"{slot}:").grid(row=i, column=0, sticky="w")
+            self.slot_labels[slot] = ttk.Label(equip_frame, text=f"{self._(slot.lower())}:")
+            self.slot_labels[slot].grid(row=i, column=0, sticky="w")
             ttk.Label(equip_frame, textvariable=var).grid(row=i, column=1, sticky="w", padx=5)
 
     def _create_inventory_frame(self, parent):
         parent.rowconfigure(0, weight=1)
         parent.columnconfigure(0, weight=1)
-        self.inv_frame = ttk.LabelFrame(parent, text="Rucksack", padding="10")
+        self.inv_frame = ttk.LabelFrame(parent, text=self._("backpack"), padding="10")
         self.inv_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.inv_frame.rowconfigure(0, weight=1)
         self.inv_frame.columnconfigure(0, weight=1)
@@ -380,15 +379,22 @@ class RpgGui(ttk.Frame):
         self.item_level_var.set(self.player.get_item_level())
         self.char_gold_var.set(format_currency(self.player.copper))
         total_stats = self.player.get_total_stats()
+
+        stat_map = {"Stärke": "strength", "Agilität": "agility", "Intelligenz": "intelligence", "Glück": "luck"}
         for stat, var in self.stats_vars.items():
             base = self.player.attributes.get(stat, 0)
             total = total_stats.get(stat, 0)
             bonus = total - base
             var.set(f"{total} ({base} {'+' if bonus >= 0 else ''}{bonus})") if bonus != 0 else var.set(total)
+            # Update the label text itself
+            self.stat_labels[stat.lower()].config(text=f"{self._(stat_map.get(stat, stat.lower()))}:")
+
         for slot, var in self.equipment_vars.items():
             item = self.player.equipment.get(slot)
-            var.set(item.name if item else "Leer")
-        self.inv_frame.config(text=f"Inventar ({len(self.player.inventory)}/{self.player.max_inventory_size})")
+            var.set(item.name if item else self._("empty_slot"))
+            self.slot_labels[slot].config(text=f"{self._(slot.lower())}:")
+
+        self.inv_frame.config(text=self._("inventory_count").format(current=len(self.player.inventory), max=self.player.max_inventory_size))
         self.inventory_listbox.delete(0, tk.END)
         for i, item in enumerate(self.player.inventory):
             item_text = str(item)
@@ -427,7 +433,7 @@ class RpgGui(ttk.Frame):
 
         # Update resources display
         if not self.player.resources:
-            self.resources_label.config(text="Noch keine Ressourcen gesammelt.")
+            self.resources_label.config(text=self._("no_resources"))
         else:
             resources_text = "\n".join([f"{name}: {amount}" for name, amount in self.player.resources.items()])
             self.resources_label.config(text=resources_text)
@@ -462,29 +468,26 @@ class RpgGui(ttk.Frame):
     def toggle_auto_quest(self):
         self.is_auto_questing = not self.is_auto_questing
         if self.is_auto_questing:
-            self.auto_quest_button.config(text="Auto-Quest stoppen")
-            self.set_loot_text("Auto-Quest Modus aktiv...")
+            self.auto_quest_button.config(text=self._("stop_auto_quest"))
+            self.set_loot_text(self._("auto_quest_active"))
             self.start_quest()
         else:
-            self.auto_quest_button.config(text="Auto-Quest starten")
-            self.set_loot_text("Auto-Quest Modus gestoppt.")
+            self.auto_quest_button.config(text=self._("start_auto_quest"))
+            self.set_loot_text(self._("auto_quest_stopped"))
 
     def toggle_minigame(self):
         """Starts or stops the resource hunt minigame."""
         self.minigame_running = not self.minigame_running
         if self.minigame_running:
-            self.minigame_toggle_button.config(text="Ressourcenjagd beenden")
-            # Reset spawn timer to spawn an orb relatively quickly
+            self.minigame_toggle_button.config(text=self._("stop_resource_hunt"))
             self.last_orb_spawn_time = 0
             self.next_orb_spawn_delay = random.uniform(0.5, 1.5)
-            self.run_minigame_loop() # Start the independent loop
+            self.run_minigame_loop()
         else:
-            self.minigame_toggle_button.config(text="Ressourcenjagd starten")
-            # Stop the independent loop
+            self.minigame_toggle_button.config(text=self._("start_resource_hunt"))
             if self.minigame_loop_id:
                 self.master.after_cancel(self.minigame_loop_id)
                 self.minigame_loop_id = None
-            # Clear existing orbs
             for orb_id in list(self.minigame_orbs.keys()):
                 self.minigame_canvas.delete(orb_id)
             self.minigame_orbs.clear()
@@ -497,12 +500,11 @@ class RpgGui(ttk.Frame):
     def start_quest(self):
         if self.current_quest:
             if not self.is_auto_questing:
-                messagebox.showwarning("Quest aktiv", "Bitte schließe erst die aktuelle Quest ab.")
+                messagebox.showwarning(self._("quest_active"), self._("quest_active_msg"))
             return
         if len(self.player.inventory) >= self.player.max_inventory_size:
-            self.set_loot_text("Inventar voll! Auto-Quest gestoppt.")
-            # Use the paused messagebox
-            self.show_paused_messagebox("Inventar voll", "Dein Inventar ist voll. Besuche den Händler!")
+            self.set_loot_text(self._("inventory_full_auto_quest_stopped"))
+            self.show_paused_messagebox(self._("inventory_full"), self._("inventory_full_msg"))
             if self.is_auto_questing:
                 self.toggle_auto_quest()
             return
@@ -518,11 +520,10 @@ class RpgGui(ttk.Frame):
             self.quest_image_label.config(image=photo_img)
             self.quest_image_label.image = photo_img
         except Exception as e:
-            self.quest_image_label.config(image=None, text=f"Bildfehler:\n{e}")
+            self.quest_image_label.config(image=None, text=self._("image_load_error").format(e=e))
             self.quest_image_label.image = None
 
         self.current_quest = Quest(quest_name)
-        # Clear log for the new quest and show the first phase text
         self.clear_log()
         self.add_to_log(self.current_quest.travel_text)
         self.progress_bar['value'] = 0
@@ -530,153 +531,94 @@ class RpgGui(ttk.Frame):
         self.advance_quest()
 
     def update_minigame(self):
-        # Stop minigame updates if it's not supposed to be running
-        if not self.minigame_running:
-            return
-
+        if not self.minigame_running: return
         now = time.time()
-        # Remove old orbs
-        orbs_to_remove = []
-        for orb_id, orb_data in self.minigame_orbs.items():
-            if now - orb_data['spawn_time'] > orb_data['lifespan']:
-                self.minigame_canvas.delete(orb_id)
-                orbs_to_remove.append(orb_id)
+        orbs_to_remove = [orb_id for orb_id, data in self.minigame_orbs.items() if now - data['spawn_time'] > data['lifespan']]
         for orb_id in orbs_to_remove:
+            self.minigame_canvas.delete(orb_id)
             del self.minigame_orbs[orb_id]
 
-        # Spawn new orbs
         if now - self.last_orb_spawn_time > self.next_orb_spawn_delay:
             canvas_width = self.minigame_canvas.winfo_width()
             canvas_height = self.minigame_canvas.winfo_height()
-
-            if canvas_width > 1 and canvas_height > 1: # Ensure canvas is rendered
+            if canvas_width > 1 and canvas_height > 1:
                 x = random.randint(10, canvas_width - 10)
                 y = random.randint(10, canvas_height - 10)
-
-                # Determine resource type and symbol
-                if random.random() < 0.8:
-                    resource_type = "Eisenerz"
-                    symbol = "🪨"
-                else:
-                    resource_type = "Juwel"
-                    symbol = "💎"
-
-                # Create a text item on the canvas
+                resource_type, symbol = ("Eisenerz", "🪨") if random.random() < 0.8 else ("Juwel", "💎")
                 orb_id = self.minigame_canvas.create_text(x, y, text=symbol, font=("", 14))
-
-                # Bind click event
                 self.minigame_canvas.tag_bind(orb_id, "<Button-1>", lambda event, o_id=orb_id: self.on_orb_click(o_id))
-
-                self.minigame_orbs[orb_id] = {
-                    'spawn_time': now,
-                    'lifespan': random.uniform(2, 3),
-                    'resource': resource_type
-                }
+                self.minigame_orbs[orb_id] = {'spawn_time': now, 'lifespan': random.uniform(2, 3), 'resource': resource_type}
                 self.last_orb_spawn_time = now
                 self.next_orb_spawn_delay = random.uniform(2, 5)
 
     def on_orb_click(self, orb_id):
         """Handles the click on a resource orb with a zoom-pulse animation."""
-        if orb_id in self.minigame_orbs:
-            resource_data = self.minigame_orbs.pop(orb_id)
-            self.player.add_resource(resource_data['resource'], 1)
+        if orb_id not in self.minigame_orbs: return
+        resource_data = self.minigame_orbs.pop(orb_id)
+        self.player.add_resource(resource_data['resource'], 1)
+        start_time, duration, initial_font_size, max_font_size = time.time(), 0.3, 14, 24
 
-            # --- New Zoom-Pulse Animation ---
-            start_time = time.time()
-            duration = 0.3  # 300ms animation
-            initial_font_size = 14
-            max_font_size = 24
-
-            def pulse_step():
-                elapsed = time.time() - start_time
-                progress = min(elapsed / duration, 1.0)
-
-                # Go from initial to max size in the first half, then back down
-                if progress < 0.5:
-                    size_progress = progress * 2
-                else:
-                    size_progress = (1 - progress) * 2
-
-                current_size = int(initial_font_size + (max_font_size - initial_font_size) * size_progress)
-
-                try:
-                    self.minigame_canvas.itemconfig(orb_id, font=("", current_size))
-                except tk.TclError:
-                    # Orb might have been deleted if another function cleared it, just stop.
-                    return
-
-                if progress < 1.0:
-                    self.after(15, pulse_step)
-                else:
-                    # Animation finished, now delete the orb and update the UI
-                    try:
-                        self.minigame_canvas.delete(orb_id)
-                    except tk.TclError:
-                        pass # Ignore if already gone
-                    self.update_display()
-
-            pulse_step()
-
+        def pulse_step():
+            elapsed = time.time() - start_time
+            progress = min(elapsed / duration, 1.0)
+            size_progress = progress * 2 if progress < 0.5 else (1 - progress) * 2
+            current_size = int(initial_font_size + (max_font_size - initial_font_size) * size_progress)
+            try:
+                self.minigame_canvas.itemconfig(orb_id, font=("", current_size))
+            except tk.TclError: return
+            if progress < 1.0:
+                self.after(15, pulse_step)
+            else:
+                try: self.minigame_canvas.delete(orb_id)
+                except tk.TclError: pass
+                self.update_display()
+        pulse_step()
 
     def advance_quest(self):
         if self.current_quest is None: return
-
         old_phase = self.current_quest.phase
         event_message = self.current_quest.advance(self.player)
-        new_phase = self.current_quest.phase
-
-        # Display the static phase text only when the phase changes
-        if new_phase != old_phase:
-            if new_phase == "Aktion":
-                self.add_to_log(self.current_quest.action_text)
-            elif new_phase == "Rückkehr":
-                self.add_to_log(self.current_quest.return_text)
-
-        # Log intermittent action messages
-        if event_message:
-            self.add_to_log(event_message)
+        if self.current_quest.phase != old_phase:
+            phase_text = getattr(self.current_quest, self.current_quest.phase.lower() + "_text", "")
+            if phase_text: self.add_to_log(phase_text)
+        if event_message: self.add_to_log(event_message)
 
         if self.player.current_lp <= 0:
             self.handle_game_over(death_by_boss=False)
             return
-        if self.player.current_lp / self.player.max_lp < 0.1:
-            if self.is_auto_questing:
-                self.toggle_auto_quest()
-                messagebox.showwarning("Niedrige Lebenspunkte!", "Deine Lebenspunkte sind kritisch niedrig! Auto-Quest pausiert. Heile dich!")
+        if self.player.current_lp / self.player.max_lp < 0.1 and self.is_auto_questing:
+            self.toggle_auto_quest()
+            messagebox.showwarning(self._("low_health"), self._("low_health_msg"))
+
         if self.current_quest.is_complete():
             gold, xp, item = self.current_quest.generate_reward(self.player)
             loot_status, received_item = self.player.add_loot(gold, item)
             level_up_info = self.player.add_xp(xp)
 
-            loot_message = f"Loot: {format_currency(gold)}, {xp} XP"
+            loot_message = f"{self._('loot')}: {format_currency(gold)}, {xp} XP"
             if received_item:
                 if loot_status == "added":
-                    loot_message += f" und '{received_item.name}'"
+                    loot_message += f" {self._('and')} '{received_item.name}'"
                 elif loot_status == "inventory_full":
-                    loot_message += f" (aber '{received_item.name}' passte nicht ins Inventar!)"
+                    loot_message += f" ({self._('but')} '{received_item.name}' {self._('did_not_fit')})"
                 elif loot_status == "auto_sold":
-                    loot_message += f" und '{received_item.name}' (automatisch verkauft für {format_currency(received_item.value)})"
+                    loot_message += f" {self._('and')} '{received_item.name}' ({self._('auto_sold_for')} {format_currency(received_item.value)})"
                 elif loot_status == "auto_equipped":
-                     # The message is already in pending_unlock_messages, just update the loot text
-                    loot_message += f" und '{received_item.name}' (automatisch ausgerüstet!)"
-
+                    loot_message += f" {self._('and')} '{received_item.name}' ({self._('auto_equipped')})"
             self.set_loot_text(loot_message)
 
-            # Display any new messages from auto-equipping
             if self.player.pending_unlock_messages:
                 for msg in self.player.pending_unlock_messages:
-                    self.add_to_log(msg) # Add to log without popup
+                    self.add_to_log(msg)
                 self.player.pending_unlock_messages = []
-
 
             if level_up_info:
                 self.pause_quest_loop()
-                level_up_summary = f"Level Up! Du bist jetzt Level {self.player.level}!\n\nAttribut-Boni:\n" + "\n".join(level_up_info)
-                CountdownDialog(self, title="Level Aufstieg!", message=level_up_summary, on_close_callback=self.resume_quest_loop)
+                level_up_summary = self._("level_up_msg").format(level=self.player.level, bonuses="\n".join(level_up_info))
+                CountdownDialog(self, title=self._("level_up_title"), message=level_up_summary, on_close_callback=self.resume_quest_loop)
+
             self.current_quest = None
             self.progress_bar['value'] = 0
-
-            # Bild nach Quest-Abschluss auf Platzhalter zurücksetzen
             self.quest_image_label.config(image=self.placeholder_image)
             self.quest_image_label.image = self.placeholder_image
 
