@@ -6,14 +6,16 @@ import tkinter as tk
 from tkinter import ttk
 from highscore_manager import load_highscores
 from utils import center_window, format_currency
+from translations import get_text
 
 class HighscoreWindow(tk.Toplevel):
     """A Toplevel window to display the high score list."""
 
-    def __init__(self, parent):
+    def __init__(self, parent, language="de"):
         """Initializes the high score window."""
         super().__init__(parent)
-        self.title("Halle der Helden")
+        self.language = language
+        self.title(self._("highscores"))
         self.transient(parent)
         self.grab_set()
 
@@ -21,6 +23,10 @@ class HighscoreWindow(tk.Toplevel):
         self.populate_scores()
 
         self.protocol("WM_DELETE_WINDOW", self.destroy)
+
+    def _(self, key):
+        """Alias for get_text for shorter calls."""
+        return get_text(self.language, key)
 
     def create_widgets(self):
         """Creates and places the widgets for the window."""
@@ -34,13 +40,13 @@ class HighscoreWindow(tk.Toplevel):
         self.tree = ttk.Treeview(container, columns=columns, show="headings")
 
         # Define headings
-        self.tree.heading("name", text="Name")
-        self.tree.heading("level", text="Level")
-        self.tree.heading("rebirths", text="Wiedergeburten")
-        self.tree.heading("bosses", text="Besiegte Bosse")
-        self.tree.heading("resources", text="Ressourcen")
-        self.tree.heading("best_equipment", text="Beste Ausrüstung")
-        self.tree.heading("copper", text="Gold")
+        self.tree.heading("name", text=self._("name"))
+        self.tree.heading("level", text=self._("level"))
+        self.tree.heading("rebirths", text=self._("rebirths"))
+        self.tree.heading("bosses", text=self._("bosses_defeated"))
+        self.tree.heading("resources", text=self._("resources"))
+        self.tree.heading("best_equipment", text=self._("equipment"))
+        self.tree.heading("copper", text=self._("gold"))
 
         # Configure column widths
         self.tree.column("name", width=120)
@@ -59,7 +65,7 @@ class HighscoreWindow(tk.Toplevel):
         scrollbar.grid(row=0, column=1, sticky="ns")
 
         # Close button
-        close_button = ttk.Button(container, text="Schließen", command=self.destroy)
+        close_button = ttk.Button(container, text=self._("close"), command=self.destroy)
         close_button.grid(row=1, column=0, columnspan=2, pady=(10, 0))
 
         center_window(self, self.master.winfo_toplevel())
@@ -77,12 +83,12 @@ class HighscoreWindow(tk.Toplevel):
 
             player_name = score.get("name", "")
             if score.get("cheat_activated", False):
-                player_name += " (Cheat)"
+                player_name += f" ({self._('cheat_activated')})"
 
             best_equipment = (
-                f"Waffe: {score.get('best_weapon', 'N/A')}, "
-                f"Kopf: {score.get('best_head', 'N/A')}, "
-                f"Brust: {score.get('best_chest', 'N/A')}"
+                f"{self._('weapon')}: {score.get('best_weapon', 'N/A')}, "
+                f"{self._('head')}: {score.get('best_head', 'N/A')}, "
+                f"{self._('chest')}: {score.get('best_chest', 'N/A')}"
             )
             self.tree.insert("", tk.END, values=(
                 player_name,

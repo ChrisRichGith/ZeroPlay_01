@@ -84,12 +84,13 @@ AVAILABLE_QUESTS = [
 class RpgGui(ttk.Frame):
     """Manages the main game GUI frame."""
 
-    def __init__(self, parent, character, callbacks, initial_messages=None):
+    def __init__(self, parent, character, callbacks, initial_messages=None, language="de"):
         """Initializes the GUI with a character object."""
         super().__init__(parent)
         self.callbacks = callbacks
-
+        self.language = language
         self.player = character
+        self.player.language = language # Pass language to character for other windows
         self.trader = Trader()
         self.current_quest = None
         self.is_auto_questing = False
@@ -857,7 +858,7 @@ class RpgGui(ttk.Frame):
             button.config(state=tk.DISABLED)
 
         # Show the custom game over window, passing the death cause
-        GameOverWindow(self, self.player, on_close_callback=lambda: self.callbacks['game_over'](death_by_boss=death_by_boss), death_by_boss=death_by_boss)
+        GameOverWindow(self, self.player, on_close_callback=lambda: self.callbacks['game_over'](death_by_boss=death_by_boss), death_by_boss=death_by_boss, language=self.player.language)
 
     def _handle_keypress(self, event):
         """Handles key presses to check for cheat codes."""
