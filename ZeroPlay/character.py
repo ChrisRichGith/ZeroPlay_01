@@ -25,7 +25,8 @@ class Character:
         self.copper = 0
         # Load base attributes and image path from the selected class
         class_data = CLASSES.get(klasse, {})
-        self.attributes = class_data.get("attributes", {'Stärke': 5, 'Agilität': 5, 'Intelligenz': 5, 'Glück': 5}).copy()
+        self.base_attributes = class_data.get("attributes", {'Stärke': 5, 'Agilität': 5, 'Intelligenz': 5, 'Glück': 5}).copy()
+        self.attributes = self.base_attributes.copy()
         self.main_stat = class_data.get("main_stat") # Assign main_stat
         self.image_path = class_data.get("image_path", None)  # Store the image path
         self.inventory = []
@@ -34,6 +35,7 @@ class Character:
         self.resources = {}
         self.boss_tier = 0
         self.bosses_defeated = 0
+        self.rebirths = 0
         self.autosell_unlocked_notified = False
         self.cheat_activated = False # Flag for highscore
         self.is_immortal = False
@@ -103,6 +105,33 @@ class Character:
             self.xp -= self.xp_to_next_level
             level_up_messages.extend(self.level_up())
         return level_up_messages
+
+    def rebirth(self):
+        """
+        Resets the character to level 1 but with improved base stats.
+        This happens after being defeated by a boss.
+        """
+        self.rebirths += 1
+        self.level = 1
+        self.xp = 0
+        self.xp_to_next_level = self._calculate_xp_for_next_level()
+        self.copper = 0
+        self.inventory = []
+        self.equipment = {'Kopf': None, 'Brust': None, 'Waffe': None}
+        self.resources = {}
+        self.boss_tier = 0 # Reset boss progression
+
+        # Improve base attributes permanently
+        for stat in self.base_attributes:
+            # Increase by a percentage of the base, e.g., 10%
+            increase = max(1, int(self.base_attributes[stat] * 0.10))
+            self.base_attributes[stat] += increase
+
+        # Reset current attributes to the new, improved base attributes
+        self.attributes = self.base_attributes.copy()
+
+        # Recalculate all derived stats and heal the character
+        self.update_derived_stats(heal_on_update=True)
 
     def level_up(self):
         """Handles the character's level up process."""
