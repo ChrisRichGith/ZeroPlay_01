@@ -60,14 +60,14 @@ class Game:
         self.switch_frame(StartMenu, callbacks=callbacks, language=self.language)
 
     def show_highscores(self):
-        HighscoreWindow(self.root)
+        HighscoreWindow(self.root, language=self.language)
 
     def show_character_creation(self):
         callbacks = {
             'back': self.show_start_menu,
             'confirm': self.create_character_and_show_game
         }
-        self.switch_frame(ClassSelectionFrame, callbacks=callbacks)
+        self.switch_frame(ClassSelectionFrame, callbacks=callbacks, language=self.language)
 
     def create_character_and_show_game(self, name, klasse):
         self.character = Character(name, klasse)
@@ -92,7 +92,7 @@ class Game:
         self.character.pending_unlock_messages = [] # Clear messages after retrieving
 
         # The RpgGui now takes the character object directly
-        self.switch_frame(RpgGui, character=self.character, callbacks=callbacks, initial_messages=initial_messages)
+        self.switch_frame(RpgGui, character=self.character, callbacks=callbacks, initial_messages=initial_messages, language=self.language)
 
 
     def handle_game_over_and_restart(self, death_by_boss):

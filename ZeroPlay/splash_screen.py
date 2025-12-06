@@ -4,6 +4,7 @@ Defines the Splash Screen for language selection and game introduction.
 """
 import tkinter as tk
 from tkinter import ttk
+from translations import get_text
 
 class SplashScreen(ttk.Frame):
     """A frame that allows language selection and shows a game introduction."""
@@ -21,28 +22,6 @@ class SplashScreen(ttk.Frame):
         self.callbacks = callbacks
         self.selected_lang = tk.StringVar(value="de")  # Default to German
 
-        # Introduction and controls text, will be updated by language change
-        self.intro_text_de = (
-            "Willkommen bei Chronicle of the Idle Hero!\n\n"
-            "Ziel des Spiels:\n"
-            "Werde stärker, besiege immer mächtigere Bosse und erklimme die Spitze der Highscore-Liste. "
-            "Der Tod durch einen Boss ist nicht das Ende, sondern eine Wiedergeburt, die dich stärker macht. "
-            "Aber sei gewarnt: Ein Scheitern bei einer normalen Quest führt zur endgültigen Löschung deines Helden!\n\n"
-            "Steuerung:\n"
-            "Das Spiel wird hauptsächlich mit der Maus bedient. Beginne Quests, besuche Händler und rüste Gegenstände aus, "
-            "um dein Abenteuer voranzutreiben."
-        )
-        self.intro_text_en = (
-            "Welcome to Chronicle of the Idle Hero!\n\n"
-            "Objective:\n"
-            "Grow stronger, defeat increasingly powerful bosses, and climb to the top of the highscore list. "
-            "Death by a boss is not the end, but a rebirth that makes you stronger. "
-            "But be warned: Failing a normal quest will lead to the permanent deletion of your hero!\n\n"
-            "Controls:\n"
-            "The game is primarily controlled with the mouse. Start quests, visit merchants, and equip items "
-            "to advance your adventure."
-        )
-
         self.create_widgets()
         self.selected_lang.trace_add("write", self.update_text)
         self.update_text() # Initial text setup
@@ -59,31 +38,42 @@ class SplashScreen(ttk.Frame):
         # Language Selection
         lang_frame = ttk.Frame(container)
         lang_frame.pack(pady=10)
-        ttk.Label(lang_frame, text="Sprache / Language:").pack(side=tk.LEFT, padx=5)
+        self.lang_label = ttk.Label(lang_frame, text="")
+        self.lang_label.pack(side=tk.LEFT, padx=5)
         de_radio = ttk.Radiobutton(lang_frame, text="Deutsch", variable=self.selected_lang, value="de")
         de_radio.pack(side=tk.LEFT)
         en_radio = ttk.Radiobutton(lang_frame, text="English", variable=self.selected_lang, value="en")
         en_radio.pack(side=tk.LEFT, padx=10)
 
         # Introduction Text
-        self.intro_label = ttk.Label(container, text="", justify=tk.LEFT, wraplength=600, font=("Helvetica", 12))
-        self.intro_label.pack(pady=20)
+        self.intro_frame = ttk.Frame(container, padding=10)
+        self.intro_frame.pack(pady=20)
+        self.title_label = ttk.Label(self.intro_frame, text="", font=("Helvetica", 14, "bold"))
+        self.title_label.pack(anchor="w", pady=(0, 10))
+        self.objective_title_label = ttk.Label(self.intro_frame, text="", font=("Helvetica", 12, "underline"))
+        self.objective_title_label.pack(anchor="w")
+        self.objective_text_label = ttk.Label(self.intro_frame, text="", justify=tk.LEFT, wraplength=600)
+        self.objective_text_label.pack(anchor="w", pady=(5, 15))
+        self.controls_title_label = ttk.Label(self.intro_frame, text="", font=("Helvetica", 12, "underline"))
+        self.controls_title_label.pack(anchor="w")
+        self.controls_text_label = ttk.Label(self.intro_frame, text="", justify=tk.LEFT, wraplength=600)
+        self.controls_text_label.pack(anchor="w", pady=(5, 0))
 
         # Continue Button
-        continue_button = ttk.Button(
+        self.continue_button = ttk.Button(
             container,
-            text="Weiter",
+            text="",
             command=lambda: self.callbacks['continue'](self.selected_lang.get())
         )
-        continue_button.pack(pady=10)
-        self.continue_button = continue_button # Keep a reference
+        self.continue_button.pack(pady=10)
 
     def update_text(self, *args):
         """Updates the UI text based on the selected language."""
         lang = self.selected_lang.get()
-        if lang == "de":
-            self.intro_label.config(text=self.intro_text_de)
-            self.continue_button.config(text="Weiter")
-        else: # en
-            self.intro_label.config(text=self.intro_text_en)
-            self.continue_button.config(text="Continue")
+        self.lang_label.config(text=get_text(lang, "language"))
+        self.title_label.config(text=get_text(lang, "splash_title"))
+        self.objective_title_label.config(text=get_text(lang, "splash_objective_title"))
+        self.objective_text_label.config(text=get_text(lang, "splash_objective_text"))
+        self.controls_title_label.config(text=get_text(lang, "splash_controls_title"))
+        self.controls_text_label.config(text=get_text(lang, "splash_controls_text"))
+        self.continue_button.config(text=get_text(lang, "continue"))

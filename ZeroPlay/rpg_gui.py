@@ -84,12 +84,13 @@ AVAILABLE_QUESTS = [
 class RpgGui(ttk.Frame):
     """Manages the main game GUI frame."""
 
-    def __init__(self, parent, character, callbacks, initial_messages=None):
+    def __init__(self, parent, character, callbacks, initial_messages=None, language="de"):
         """Initializes the GUI with a character object."""
         super().__init__(parent)
         self.callbacks = callbacks
-
+        self.language = language
         self.player = character
+        self.player.language = language # Pass language to character for other windows
         self.trader = Trader()
         self.current_quest = None
         self.is_auto_questing = False
@@ -764,7 +765,7 @@ class RpgGui(ttk.Frame):
 
     def open_trader_window(self):
         self.trader_button.config(state=tk.DISABLED)
-        TraderWindow(self, self.player, self.trader, on_close_callback=self.on_trader_close)
+        TraderWindow(self, self.player, self.trader, on_close_callback=self.on_trader_close, language=self.language)
 
     def on_trader_close(self):
         self.update_display()
@@ -772,7 +773,7 @@ class RpgGui(ttk.Frame):
 
     def open_blacksmith_window(self):
         self.blacksmith_button.config(state=tk.DISABLED)
-        BlacksmithWindow(self, self.player, on_close_callback=self.on_blacksmith_close)
+        BlacksmithWindow(self, self.player, on_close_callback=self.on_blacksmith_close, language=self.language)
 
     def on_blacksmith_close(self):
         self.update_display()
@@ -821,7 +822,7 @@ class RpgGui(ttk.Frame):
 
         if messagebox.askyesno(title, message, parent=self):
             self.boss_arena_button.config(state=tk.DISABLED)
-            BossArenaWindow(self, self.player, boss_data, base_player_ilvl, on_close_callback=self.on_boss_arena_close, rebirths=self.player.rebirths)
+            BossArenaWindow(self, self.player, boss_data, base_player_ilvl, on_close_callback=self.on_boss_arena_close, rebirths=self.player.rebirths, language=self.language)
         else:
             self.resume_quest_loop()
 
@@ -857,7 +858,7 @@ class RpgGui(ttk.Frame):
             button.config(state=tk.DISABLED)
 
         # Show the custom game over window, passing the death cause
-        GameOverWindow(self, self.player, on_close_callback=lambda: self.callbacks['game_over'](death_by_boss=death_by_boss), death_by_boss=death_by_boss)
+        GameOverWindow(self, self.player, on_close_callback=lambda: self.callbacks['game_over'](death_by_boss=death_by_boss), death_by_boss=death_by_boss, language=self.player.language)
 
     def _handle_keypress(self, event):
         """Handles key presses to check for cheat codes."""
