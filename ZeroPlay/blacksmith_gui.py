@@ -7,13 +7,15 @@ from tkinter import ttk, messagebox
 from blacksmith import Blacksmith
 from utils import center_window
 from game_data import RARITIES
+from translations import get_text
 
 class BlacksmithWindow(tk.Toplevel):
     """Manages the blacksmith interaction window."""
 
-    def __init__(self, parent, player, on_close_callback):
+    def __init__(self, parent, player, on_close_callback, language="de"):
         super().__init__(parent)
-        self.title("Schmiede")
+        self.language = language
+        self.title(self._("visit_blacksmith"))
         self.minsize(800, 600)
         self.transient(parent)
         self.grab_set()
@@ -27,21 +29,21 @@ class BlacksmithWindow(tk.Toplevel):
 
         self.create_widgets()
         self.update_display()
-
-        # Center the window over its parent
         center_window(self, self.master.winfo_toplevel())
+
+    def _(self, key):
+        """Alias for get_text for shorter calls."""
+        return get_text(self.language, key)
 
     def create_widgets(self):
         """Creates and places all widgets for the blacksmith window."""
-        # Main frame
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
-        main_frame.columnconfigure(0, weight=1) # Equipment list
-        main_frame.columnconfigure(1, weight=1) # Details
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=1)
         main_frame.rowconfigure(0, weight=1)
 
-        # --- Equipment List ---
-        equip_frame = ttk.LabelFrame(main_frame, text="Ausrüstung", padding="10")
+        equip_frame = ttk.LabelFrame(main_frame, text=self._("equipment"), padding="10")
         equip_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
         equip_frame.rowconfigure(0, weight=1)
         equip_frame.columnconfigure(0, weight=1)
@@ -50,43 +52,41 @@ class BlacksmithWindow(tk.Toplevel):
         self.equip_listbox.grid(row=0, column=0, sticky="nsew")
         self.equip_listbox.bind('<<ListboxSelect>>', self.on_item_select)
 
-        # --- Details and Upgrade Frame ---
-        details_frame = ttk.LabelFrame(main_frame, text="Verbesserung", padding="10")
+        details_frame = ttk.LabelFrame(main_frame, text=self._("blacksmith_upgrade"), padding="10")
         details_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
 
-        self.item_name_label = ttk.Label(details_frame, text="Wähle einen Gegenstand", font=("", 12, "bold"))
+        self.item_name_label = ttk.Label(details_frame, text=self._("select_item_prompt"), font=("", 12, "bold"))
         self.item_name_label.pack(pady=5)
 
-        self.current_stats_label = ttk.Label(details_frame, text="Aktuelle Werte:")
+        self.current_stats_label = ttk.Label(details_frame, text=self._("current_stats"))
         self.current_stats_label.pack(pady=5, anchor="w")
 
-        self.next_stats_label = ttk.Label(details_frame, text="Nächste Stufe:")
+        self.next_stats_label = ttk.Label(details_frame, text=self._("next_level"))
         self.next_stats_label.pack(pady=5, anchor="w")
 
-        self.cost_label = ttk.Label(details_frame, text="Kosten:")
+        self.cost_label = ttk.Label(details_frame, text=self._("cost"))
         self.cost_label.pack(pady=10, anchor="w")
 
-        self.upgrade_button = ttk.Button(details_frame, text="Verbessern", command=self.upgrade_item, state=tk.DISABLED)
+        self.upgrade_button = ttk.Button(details_frame, text=self._("upgrade_button"), command=self.upgrade_item, state=tk.DISABLED)
         self.upgrade_button.pack(pady=20, fill=tk.X, ipady=5)
 
-        self.player_resources_label = ttk.Label(details_frame, text="Deine Ressourcen:")
+        self.player_resources_label = ttk.Label(details_frame, text=self._("your_resources"))
         self.player_resources_label.pack(side=tk.BOTTOM, pady=10)
-
 
     def update_display(self):
         """Updates all displayed information."""
-        # Update equipment list
         self.equip_listbox.delete(0, tk.END)
-        for slot, item in self.player.equipment.items():
+        self.slot_map = {}
+        for i, (slot, item) in enumerate(self.player.equipment.items()):
+            display_slot = self._(slot.lower())
+            self.slot_map[i] = slot
             if item:
-                self.equip_listbox.insert(tk.END, f"[{slot}] {item.name}")
+                self.equip_listbox.insert(tk.END, f"[{display_slot}] {item.name}")
             else:
-                self.equip_listbox.insert(tk.END, f"[{slot}] Leer")
+                self.equip_listbox.insert(tk.END, f"[{display_slot}] {self._('empty_slot')}")
 
-        # Update player resources display
-        resources_text = "Deine Ressourcen:\n" + "\n".join([f"{name}: {amount}" for name, amount in self.player.resources.items()])
+        resources_text = self._("your_resources") + "\n" + "\n".join([f"{name}: {amount}" for name, amount in self.player.resources.items()])
         self.player_resources_label.config(text=resources_text)
-
         self.update_details()
 
     def on_item_select(self, event=None):
@@ -95,55 +95,43 @@ class BlacksmithWindow(tk.Toplevel):
         if not selected_indices:
             self.selected_item = None
             return
-
-        selected_slot_index = selected_indices[0]
-        # Map listbox index back to the equipment slot name
-        slot_order = ['Kopf', 'Brust', 'Waffe'] # This should be consistent
-        selected_slot_name = slot_order[selected_slot_index]
-
+        selected_slot_name = self.slot_map.get(selected_indices[0])
         self.selected_item = self.player.equipment.get(selected_slot_name)
-
         self.update_details()
 
     def update_details(self):
         """Updates the details section for the selected item."""
         if not self.selected_item:
-            self.item_name_label.config(text="Wähle einen Gegenstand")
-            self.current_stats_label.config(text="Aktuelle Werte:")
-            self.next_stats_label.config(text="Nächste Stufe:")
-            self.cost_label.config(text="Kosten:")
+            self.item_name_label.config(text=self._("select_item_prompt"))
+            self.current_stats_label.config(text=self._("current_stats"))
+            self.next_stats_label.config(text=self._("next_level"))
+            self.cost_label.config(text=self._("cost"))
             self.upgrade_button.config(state=tk.DISABLED)
             return
 
-        # Item selected
         max_upgrades = RARITIES[self.selected_item.rarity].get("max_upgrades", 0)
         upgrade_level_text = f"+{self.selected_item.upgrade_level} / +{max_upgrades}"
         self.item_name_label.config(text=f"{self.selected_item.name} ({upgrade_level_text})")
 
-        # Current stats
-        stats_text = "Aktuelle Werte:\n" + "\n".join([f"  {stat}: {val}" for stat, val in self.selected_item.stats_boost.items()])
+        stats_text = self._("current_stats") + "\n" + "\n".join([f"  {self._(stat.lower())}: {val}" for stat, val in self.selected_item.stats_boost.items()])
         self.current_stats_label.config(text=stats_text)
 
-        # Check if max level is reached
         if self.selected_item.upgrade_level >= max_upgrades:
-            max_stats_text = "Aktuelle Werte (Max):\n" + "\n".join([f"  {stat}: {val} (Max)" for stat, val in self.selected_item.stats_boost.items()])
+            max_stats_text = self._("current_stats") + " (Max):\n" + "\n".join([f"  {self._(stat.lower())}: {val} (Max)" for stat, val in self.selected_item.stats_boost.items()])
             self.current_stats_label.config(text=max_stats_text)
-            self.next_stats_label.config(text="Maximale Stufe erreicht")
+            self.next_stats_label.config(text=self._("max_level_reached"))
             self.cost_label.config(text="")
             self.upgrade_button.config(state=tk.DISABLED)
             return
 
-        # Predicted next stats
         next_level_stats = {stat: val + 1 for stat, val in self.selected_item.stats_boost.items()}
-        next_stats_text = f"Nächste Stufe (+{self.selected_item.upgrade_level + 1}):\n" + "\n".join([f"  {stat}: {val}" for stat, val in next_level_stats.items()])
+        next_stats_text = f"{self._('next_level')} (+{self.selected_item.upgrade_level + 1}):\n" + "\n".join([f"  {self._(stat.lower())}: {val}" for stat, val in next_level_stats.items()])
         self.next_stats_label.config(text=next_stats_text)
 
-        # Cost
         cost = self.blacksmith.get_upgrade_cost(self.selected_item)
-        cost_text = "Kosten:\n" + "\n".join([f"  {name}: {amount}" for name, amount in cost.items()])
+        cost_text = self._("cost") + "\n" + "\n".join([f"  {name}: {amount}" for name, amount in cost.items()])
         self.cost_label.config(text=cost_text)
 
-        # Check if player can afford it
         if self.blacksmith.can_afford_upgrade(self.player.resources, cost):
             self.upgrade_button.config(state=tk.NORMAL)
         else:
@@ -151,19 +139,13 @@ class BlacksmithWindow(tk.Toplevel):
 
     def upgrade_item(self):
         """Handles the item upgrade logic."""
-        if not self.selected_item:
-            return
-
+        if not self.selected_item: return
         success, message = self.blacksmith.upgrade_item(self.player, self.selected_item)
-
-        # Refresh the display immediately after the upgrade attempt to show resource changes.
         self.update_display()
-
         if success:
-            messagebox.showinfo("Erfolg!", message, parent=self)
+            messagebox.showinfo(self._("upgrade_success_title"), message, parent=self)
         else:
-            messagebox.showwarning("Fehler", message, parent=self)
-
+            messagebox.showwarning(self._("error"), message, parent=self)
 
     def on_close(self):
         """Called when the window is closed."""

@@ -5,11 +5,12 @@ Defines the GUI for the Trader window.
 import tkinter as tk
 from tkinter import ttk, messagebox
 from utils import format_currency, center_window
+from translations import get_text
 
 class TraderWindow:
     """Manages the trader GUI window."""
 
-    def __init__(self, parent, player, trader, on_close_callback):
+    def __init__(self, parent, player, trader, on_close_callback, language="de"):
         """
         Initializes the trader window.
 
@@ -18,18 +19,18 @@ class TraderWindow:
             player (Character): The player character instance.
             trader (Trader): The trader instance.
             on_close_callback: A function to call when the window is closed.
+            language (str): The selected language.
         """
         self.parent = parent
         self.player = player
         self.trader = trader
         self.on_close_callback = on_close_callback
+        self.language = language
 
-        # Create a Toplevel window that exists on top of the main window
         self.window = tk.Toplevel(parent)
-        self.window.title("Händler")
+        self.window.title(self._("visit_trader"))
         self.window.minsize(600, 500)
 
-        # Ensure closing the window calls our custom function
         self.window.protocol("WM_DELETE_WINDOW", self.close_window)
 
         # Grab focus
@@ -42,6 +43,10 @@ class TraderWindow:
 
         # Center the window over its parent
         center_window(self.window, self.parent.winfo_toplevel())
+
+    def _(self, key):
+        """Alias for get_text for shorter calls."""
+        return get_text(self.language, key)
 
     def _setup_vars(self):
         """Sets up tkinter StringVars for the trader window."""
@@ -59,19 +64,17 @@ class TraderWindow:
         top_frame = ttk.Frame(main_frame)
         top_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
 
-        ttk.Label(top_frame, text="Deine Münzen:").pack(side=tk.LEFT)
+        ttk.Label(top_frame, text=f"{self._('gold')}:").pack(side=tk.LEFT)
         ttk.Label(top_frame, textvariable=self.player_copper_var).pack(side=tk.LEFT, padx=5)
 
-        self.upgrade_button = ttk.Button(top_frame, text="Inventar erweitern", command=self.buy_upgrade)
+        self.upgrade_button = ttk.Button(top_frame, text=self._("upgrade_inventory"), command=self.buy_upgrade)
         self.upgrade_button.pack(side=tk.RIGHT)
         ttk.Label(top_frame, textvariable=self.upgrade_cost_var).pack(side=tk.RIGHT, padx=5)
 
-        # Paned Window for buy/sell sections
         paned_window = ttk.PanedWindow(main_frame, orient=tk.VERTICAL)
         paned_window.grid(row=1, column=0, sticky="nsew")
 
-        # --- Sell Frame ---
-        sell_frame = ttk.LabelFrame(paned_window, text="Dein Inventar (Verkaufen)", padding="10")
+        sell_frame = ttk.LabelFrame(paned_window, text=self._("sell_inventory"), padding="10")
         paned_window.add(sell_frame, weight=1)
         sell_frame.rowconfigure(0, weight=1)
         sell_frame.columnconfigure(0, weight=1)
@@ -81,8 +84,7 @@ class TraderWindow:
         self.sell_listbox.config(yscrollcommand=sell_scrollbar.set)
         sell_scrollbar.grid(row=0, column=1, sticky="ns")
 
-        # --- Buy Frame ---
-        buy_frame = ttk.LabelFrame(paned_window, text="Händler-Angebot (Kaufen)", padding="10")
+        buy_frame = ttk.LabelFrame(paned_window, text=self._("buy_offer"), padding="10")
         paned_window.add(buy_frame, weight=1)
         buy_frame.rowconfigure(0, weight=1)
         buy_frame.columnconfigure(0, weight=1)
@@ -93,7 +95,6 @@ class TraderWindow:
         buy_scrollbar.grid(row=0, column=1, sticky="ns")
         self.buy_listbox.bind('<Double-1>', self.on_item_double_click)
 
-        # Bottom frame for action buttons
         bottom_frame = ttk.Frame(main_frame)
         bottom_frame.grid(row=2, column=0, sticky="ew", pady=(10, 0))
         bottom_frame.columnconfigure(0, weight=1)
@@ -101,18 +102,18 @@ class TraderWindow:
 
         sell_buttons_frame = ttk.Frame(bottom_frame)
         sell_buttons_frame.grid(row=0, column=0, sticky="ew")
-        self.sell_button = ttk.Button(sell_buttons_frame, text="Verkaufen", command=self.sell_item)
+        self.sell_button = ttk.Button(sell_buttons_frame, text=self._("sell"), command=self.sell_item)
         self.sell_button.pack(fill=tk.X, expand=True, side=tk.LEFT, padx=(0, 5))
-        self.sell_all_button = ttk.Button(sell_buttons_frame, text="Schrott verkaufen", command=self.sell_all_non_upgrades)
+        self.sell_all_button = ttk.Button(sell_buttons_frame, text=self._("sell_junk"), command=self.sell_all_non_upgrades)
         self.sell_all_button.pack(fill=tk.X, expand=True, side=tk.LEFT)
 
-        self.buy_button = ttk.Button(bottom_frame, text="Kaufen", command=self.buy_item)
+        self.buy_button = ttk.Button(bottom_frame, text=self._("buy"), command=self.buy_item)
         self.buy_button.grid(row=0, column=1, sticky="ew", padx=(10, 0))
 
     def update_display(self):
         """Updates all display elements in the trader window."""
         self.player_copper_var.set(format_currency(self.player.copper))
-        self.upgrade_cost_var.set(f"Kosten: {format_currency(self.trader.get_upgrade_cost())}")
+        self.upgrade_cost_var.set(f"{self._('cost')}: {format_currency(self.trader.get_upgrade_cost())}")
 
         self.sell_listbox.delete(0, tk.END)
         for item in self.player.inventory:
@@ -132,73 +133,49 @@ class TraderWindow:
         """Sells the selected item."""
         selected_indices = self.sell_listbox.curselection()
         if not selected_indices:
-            messagebox.showwarning("Verkaufen", "Bitte wähle einen Gegenstand zum Verkaufen aus.", parent=self.window)
+            messagebox.showwarning(self._("sell"), self._("trader_sell_prompt"), parent=self.window)
             return
-
         item_index = selected_indices[0]
-        item_name = self.player.inventory[item_index].name
-        item_value = self.player.inventory[item_index].value
-
-        sold = self.trader.sell_item(self.player, item_index)
-        if sold:
-            # messagebox.showinfo("Verkauft!", f"'{item_name}' für {item_value} Gold verkauft.", parent=self.window)
+        if self.trader.sell_item(self.player, item_index):
             self.update_display()
 
     def sell_all_non_upgrades(self):
         """Sells all non-upgrade items and shows a summary."""
         items_sold, copper_gained = self.trader.sell_all_non_upgrades(self.player)
-
         if items_sold > 0:
-            messagebox.showinfo("Alles verkauft",
-                                f"{items_sold} Gegenstand/Gegenstände für insgesamt {format_currency(copper_gained)} verkauft.",
+            messagebox.showinfo(self._("sell_junk"),
+                                self._("all_sold_msg").format(items_sold=items_sold, copper_gained=format_currency(copper_gained)),
                                 parent=self.window)
             self.update_display()
         else:
-            messagebox.showinfo("Nichts zu verkaufen",
-                                "Du hast keine Gegenstände, die kein Upgrade sind.",
-                                parent=self.window)
+            messagebox.showinfo(self._("nothing_to_sell"), self._("nothing_to_sell_msg"), parent=self.window)
 
     def buy_upgrade(self):
         """Buys an inventory upgrade."""
         cost = self.trader.get_upgrade_cost()
-
-        # Check if the feature is about to be unlocked
         was_below_50 = self.player.max_inventory_size < 50
-
-        upgraded = self.trader.buy_inventory_upgrade(self.player)
-
-        if upgraded:
-            messagebox.showinfo("Upgrade erfolgreich!", f"Inventar für {format_currency(cost)} erweitert!", parent=self.window)
+        if self.trader.buy_inventory_upgrade(self.player):
+            messagebox.showinfo(self._("upgrade_success"), self._("upgrade_success_msg").format(cost=format_currency(cost)), parent=self.window)
             self.update_display()
-
-            # Show the one-time notification if the threshold was crossed
             if was_below_50 and self.player.max_inventory_size >= 50 and not self.player.autosell_unlocked_notified:
                 self.player.autosell_unlocked_notified = True
-                messagebox.showinfo(
-                    "Feature freigeschaltet!",
-                    "Du hast 50+ Inventarplätze!\n\n"
-                    "Gegenstände, die kein Upgrade für dich sind, werden ab jetzt beim Aufheben automatisch verkauft.",
-                    parent=self.window
-                )
+                messagebox.showinfo(self._("feature_unlocked"), self._("autosell_unlocked_msg"), parent=self.window)
         else:
-            messagebox.showerror("Nicht genug Münzen", "Du kannst dir dieses Upgrade nicht leisten.", parent=self.window)
+            messagebox.showerror(self._("not_enough_gold"), self._("not_enough_gold_msg"), parent=self.window)
 
     def buy_item(self):
         """Buys the selected item from the trader."""
         selected_indices = self.buy_listbox.curselection()
         if not selected_indices:
-            messagebox.showwarning("Kaufen", "Bitte wähle einen Gegenstand zum Kaufen aus.", parent=self.window)
+            messagebox.showwarning(self._("buy"), self._("trader_buy_prompt"), parent=self.window)
             return
-
         item_index = selected_indices[0]
         item_to_buy = self.potions_for_sale[item_index]
-
         success, message = self.trader.buy_item(self.player, item_to_buy)
-
         if success:
             self.update_display()
         else:
-            messagebox.showerror("Kauf fehlgeschlagen", message, parent=self.window)
+            messagebox.showerror(self._("buy_failed"), message, parent=self.window)
 
     def on_item_double_click(self, event=None):
         """Handles double-click to buy an item."""

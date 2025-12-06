@@ -17,6 +17,8 @@ TEXTS = {
         "intelligence": "Intelligenz",
         "luck": "Glück",
         "agility": "Agilität",
+        "cost": "Kosten",
+        "cheat_activated": "Cheat aktiviert",
 
         # Splash Screen
         "splash_title": "Willkommen bei Chronicle of the Idle Hero!",
@@ -87,13 +89,62 @@ TEXTS = {
         "level_up_msg": "Level Up! Du bist jetzt Level {level}!\n\nAttribut-Boni:\n{bonuses}",
         "milestone_unlocked": "Meilenstein freigeschaltet!",
 
+        # Trader
+        "upgrade_inventory": "Inventar erweitern",
+        "sell_inventory": "Dein Inventar (Verkaufen)",
+        "buy_offer": "Händler-Angebot (Kaufen)",
+        "sell": "Verkaufen",
+        "sell_junk": "Schrott verkaufen",
+        "buy": "Kaufen",
+        "trader_sell_prompt": "Bitte wähle einen Gegenstand zum Verkaufen aus.",
+        "trader_buy_prompt": "Bitte wähle einen Gegenstand zum Kaufen aus.",
+        "all_sold_msg": "{items_sold} Gegenstand/Gegenstände für insgesamt {copper_gained} verkauft.",
+        "nothing_to_sell": "Nichts zu verkaufen",
+        "nothing_to_sell_msg": "Du hast keine Gegenstände, die kein Upgrade sind.",
+        "upgrade_success": "Upgrade erfolgreich!",
+        "upgrade_success_msg": "Inventar für {cost} erweitert!",
+        "not_enough_gold": "Nicht genug Gold",
+        "not_enough_gold_msg": "Du kannst dir das nicht leisten.",
+        "buy_failed": "Kauf fehlgeschlagen",
+        "feature_unlocked": "Feature freigeschaltet!",
+        "autosell_unlocked_msg": "Du hast 50+ Inventarplätze!\n\nGegenstände, die kein Upgrade für dich sind, werden ab jetzt beim Aufheben automatisch verkauft.",
+
+        # Blacksmith
+        "blacksmith_title": "Schmiede",
+        "blacksmith_upgrade": "Verbesserung",
+        "select_item_prompt": "Wähle einen Gegenstand",
+        "current_stats": "Aktuelle Werte:",
+        "next_level": "Nächste Stufe:",
+        "upgrade_button": "Verbessern",
+        "your_resources": "Deine Ressourcen:",
+        "max_level_reached": "Maximale Stufe erreicht",
+        "upgrade_success_title": "Erfolg!",
+
+        # Boss Arena
+        "player": "Spieler",
+        "boss": "Boss",
+        "combat_log": "Kampflog",
+        "attack": "Angreifen",
+        "defend": "Verteidigen",
+        "defense_legend": "Verteidigungs-Legende",
+        "counter_attack": "Konter-Angriff",
+        "empowered_attack": "Verstärkter nächster Angriff",
+        "light_heal": "Leichte Heilung",
+        "weaken_boss": "Boss schwächen",
+        "victory": "Sieg!",
+        "defeat": "Niederlage",
+        "victory_msg": "Du hast gewonnen!\n\nBelohnungen:\n- {gold}\n- {xp} XP\n- {item}",
+        "defeat_msg": "Du hast den Kampf verloren!",
+
         # Game Over
         "game_over_title": "Game Over",
         "rebirth_title": "Wiedergeburt!",
         "game_over_quest_text": "Ruhe in Frieden, {name}.\n\nDu bist bei einer Quest gestorben und dein Charakter wurde gelöscht.",
         "game_over_rebirth_text": "{name} wurde von einem Boss besiegt!\n\nDurch die Niederlage bist du stärker geworden.\nDu wirst auf Level 1 zurückgesetzt, aber deine Basisattribute wurden permanent verbessert!",
 
-        # ... (we will add more texts as we refactor each file)
+        # Highscores
+        "rebirths": "Wiedergeburten",
+        "bosses_defeated": "Besiegte Bosse",
     },
     "en": {
         # General
@@ -108,6 +159,8 @@ TEXTS = {
         "intelligence": "Intelligence",
         "luck": "Luck",
         "agility": "Agility",
+        "cost": "Cost",
+        "cheat_activated": "Cheat Activated",
 
         # Splash Screen
         "splash_title": "Welcome to Chronicle of the Idle Hero!",
@@ -178,13 +231,62 @@ TEXTS = {
         "level_up_msg": "Level Up! You are now level {level}!\n\nAttribute Bonuses:\n{bonuses}",
         "milestone_unlocked": "Milestone Unlocked!",
 
+        # Trader
+        "upgrade_inventory": "Upgrade Inventory",
+        "sell_inventory": "Your Inventory (Sell)",
+        "buy_offer": "Trader's Offer (Buy)",
+        "sell": "Sell",
+        "sell_junk": "Sell Junk",
+        "buy": "Buy",
+        "trader_sell_prompt": "Please select an item to sell.",
+        "trader_buy_prompt": "Please select an item to buy.",
+        "all_sold_msg": "Sold {items_sold} item(s) for a total of {copper_gained}.",
+        "nothing_to_sell": "Nothing to Sell",
+        "nothing_to_sell_msg": "You have no items that are not upgrades.",
+        "upgrade_success": "Upgrade Successful!",
+        "upgrade_success_msg": "Inventory expanded for {cost}!",
+        "not_enough_gold": "Not Enough Gold",
+        "not_enough_gold_msg": "You cannot afford this.",
+        "buy_failed": "Purchase Failed",
+        "feature_unlocked": "Feature Unlocked!",
+        "autosell_unlocked_msg": "You have 50+ inventory slots!\n\nItems that are not an upgrade for you will now be sold automatically upon pickup.",
+
+        # Blacksmith
+        "blacksmith_title": "Blacksmith",
+        "blacksmith_upgrade": "Upgrade",
+        "select_item_prompt": "Select an item",
+        "current_stats": "Current Stats:",
+        "next_level": "Next Level:",
+        "upgrade_button": "Upgrade",
+        "your_resources": "Your Resources:",
+        "max_level_reached": "Max level reached",
+        "upgrade_success_title": "Success!",
+
+        # Boss Arena
+        "player": "Player",
+        "boss": "Boss",
+        "combat_log": "Combat Log",
+        "attack": "Attack",
+        "defend": "Defend",
+        "defense_legend": "Defense Legend",
+        "counter_attack": "Counter-Attack",
+        "empowered_attack": "Empowered Next Attack",
+        "light_heal": "Light Heal",
+        "weaken_boss": "Weaken Boss",
+        "victory": "Victory!",
+        "defeat": "Defeat",
+        "victory_msg": "You have won!\n\nRewards:\n- {gold}\n- {xp} XP\n- {item}",
+        "defeat_msg": "You have lost the fight!",
+
         # Game Over
         "game_over_title": "Game Over",
         "rebirth_title": "Rebirth!",
         "game_over_quest_text": "Rest in peace, {name}.\n\nYou died on a quest and your character has been deleted.",
         "game_over_rebirth_text": "{name} was defeated by a boss!\n\nThrough defeat, you have grown stronger.\nYou are reset to level 1, but your base attributes have been permanently increased!",
 
-        # ... (we will add more texts as we refactor each file)
+        # Highscores
+        "rebirths": "Rebirths",
+        "bosses_defeated": "Bosses Defeated",
     }
 }
 

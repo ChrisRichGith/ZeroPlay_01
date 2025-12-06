@@ -765,7 +765,7 @@ class RpgGui(ttk.Frame):
 
     def open_trader_window(self):
         self.trader_button.config(state=tk.DISABLED)
-        TraderWindow(self, self.player, self.trader, on_close_callback=self.on_trader_close)
+        TraderWindow(self, self.player, self.trader, on_close_callback=self.on_trader_close, language=self.language)
 
     def on_trader_close(self):
         self.update_display()
@@ -773,7 +773,7 @@ class RpgGui(ttk.Frame):
 
     def open_blacksmith_window(self):
         self.blacksmith_button.config(state=tk.DISABLED)
-        BlacksmithWindow(self, self.player, on_close_callback=self.on_blacksmith_close)
+        BlacksmithWindow(self, self.player, on_close_callback=self.on_blacksmith_close, language=self.language)
 
     def on_blacksmith_close(self):
         self.update_display()
@@ -822,7 +822,7 @@ class RpgGui(ttk.Frame):
 
         if messagebox.askyesno(title, message, parent=self):
             self.boss_arena_button.config(state=tk.DISABLED)
-            BossArenaWindow(self, self.player, boss_data, base_player_ilvl, on_close_callback=self.on_boss_arena_close, rebirths=self.player.rebirths)
+            BossArenaWindow(self, self.player, boss_data, base_player_ilvl, on_close_callback=self.on_boss_arena_close, rebirths=self.player.rebirths, language=self.language)
         else:
             self.resume_quest_loop()
 

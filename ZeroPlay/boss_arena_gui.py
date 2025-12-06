@@ -12,19 +12,20 @@ from boss import Boss
 from game_data import CLASSES
 from utils import center_window, format_currency
 from loot_system import generate_boss_reward
+from translations import get_text
 
 class BossArenaWindow(tk.Toplevel):
     """A Toplevel window for the boss fight."""
 
-    def __init__(self, parent, player, boss_data, item_level, on_close_callback=None, rebirths=0):
+    def __init__(self, parent, player, boss_data, item_level, on_close_callback=None, rebirths=0, language="de"):
         """Initializes the boss arena window."""
         super().__init__(parent)
-        self.title("Boss Arena")
+        self.language = language
+        self.title(self._("boss_arena"))
         self.parent = parent
         self.player = player
         self.on_close_callback = on_close_callback
 
-        # Prevent the user from interacting with the main window
         self.grab_set()
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
@@ -57,6 +58,10 @@ class BossArenaWindow(tk.Toplevel):
 
         center_window(self, self.parent.winfo_toplevel())
 
+    def _(self, key):
+        """Alias for get_text for shorter calls."""
+        return get_text(self.language, key)
+
     def _setup_string_vars(self):
         """Initializes StringVars for dynamic labels."""
         self.player_hp_var = tk.StringVar()
@@ -66,20 +71,18 @@ class BossArenaWindow(tk.Toplevel):
 
     def create_widgets(self):
         """Creates and places all widgets for the arena."""
-        # Main container frame
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         main_frame.columnconfigure(0, weight=1, uniform="group1")
-        main_frame.columnconfigure(1, weight=2, uniform="group1") # Log in the middle
+        main_frame.columnconfigure(1, weight=2, uniform="group1")
         main_frame.columnconfigure(2, weight=1, uniform="group1")
         main_frame.rowconfigure(0, weight=1)
 
-        # --- Player Frame (Left) ---
-        player_frame = ttk.LabelFrame(main_frame, text="Spieler", padding="10")
+        player_frame = ttk.LabelFrame(main_frame, text=self._("player"), padding="10")
         player_frame.grid(row=0, column=0, sticky="nsew", padx=5)
         player_frame.columnconfigure(0, weight=1)
-        player_frame.rowconfigure(1, weight=1) # Make portrait area expand
+        player_frame.rowconfigure(1, weight=1)
 
         ttk.Label(player_frame, textvariable=self.player_name_var).pack(pady=5)
         self.player_portrait_label = ttk.Label(player_frame)
@@ -88,17 +91,14 @@ class BossArenaWindow(tk.Toplevel):
         self.player_hp_bar = ttk.Progressbar(player_frame, orient='horizontal', mode='determinate')
         self.player_hp_bar.pack(fill=tk.X, padx=5, pady=5)
 
-
-        # --- Middle Frame (Log and Actions) ---
         middle_frame = ttk.Frame(main_frame)
         middle_frame.grid(row=0, column=1, sticky="nsew", padx=5)
-        middle_frame.rowconfigure(0, weight=3) # Log gets more space
-        middle_frame.rowconfigure(1, weight=0) # Actions
-        middle_frame.rowconfigure(2, weight=1) # Legend
+        middle_frame.rowconfigure(0, weight=3)
+        middle_frame.rowconfigure(1, weight=0)
+        middle_frame.rowconfigure(2, weight=1)
         middle_frame.columnconfigure(0, weight=1)
 
-        # Combat Log
-        log_frame = ttk.LabelFrame(middle_frame, text="Kampflog", padding="5")
+        log_frame = ttk.LabelFrame(middle_frame, text=self._("combat_log"), padding="5")
         log_frame.grid(row=0, column=0, sticky="nsew")
         log_frame.rowconfigure(0, weight=1)
         log_frame.columnconfigure(0, weight=1)
@@ -109,40 +109,35 @@ class BossArenaWindow(tk.Toplevel):
         self.log_text.config(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.log_text.config(state=tk.DISABLED)
-        self.add_to_log(f"Ein wilder {self.boss.name} erscheint!")
+        self.add_to_log(f"A wild {self.boss.name} appears!")
 
-        # Action Buttons
-        actions_frame = ttk.LabelFrame(middle_frame, text="Aktionen", padding="10")
+        actions_frame = ttk.LabelFrame(middle_frame, text=self._("actions"), padding="10")
         actions_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
         actions_frame.columnconfigure(0, weight=1)
         actions_frame.columnconfigure(1, weight=1)
 
-        self.attack_button = ttk.Button(actions_frame, text="Angreifen", command=self.player_attack)
+        self.attack_button = ttk.Button(actions_frame, text=self._("attack"), command=self.player_attack)
         self.attack_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
-        self.defend_button = ttk.Button(actions_frame, text="Verteidigen", command=self.player_defend)
+        self.defend_button = ttk.Button(actions_frame, text=self._("defend"), command=self.player_defend)
         self.defend_button.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-        # Dice Roll Legend
-        legend_frame = ttk.LabelFrame(middle_frame, text="Verteidigungs-Legende", padding="10")
+        legend_frame = ttk.LabelFrame(middle_frame, text=self._("defense_legend"), padding="10")
         legend_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
 
         legend_text = (
-            f"{self.DEFENSE_SYMBOLS[1]}: Konter-Angriff\n"
-            f"{self.DEFENSE_SYMBOLS[2]}: Verstärkter nächster Angriff\n"
-            f"{self.DEFENSE_SYMBOLS[3]}: Leichte Heilung\n"
-            f"{self.DEFENSE_SYMBOLS[4]}: Boss schwächen"
+            f"{self.DEFENSE_SYMBOLS[1]}: {self._('counter_attack')}\n"
+            f"{self.DEFENSE_SYMBOLS[2]}: {self._('empowered_attack')}\n"
+            f"{self.DEFENSE_SYMBOLS[3]}: {self._('light_heal')}\n"
+            f"{self.DEFENSE_SYMBOLS[4]}: {self._('weaken_boss')}"
         )
         ttk.Label(legend_frame, text=legend_text, justify=tk.LEFT).pack(anchor="w")
 
-        # Animation label for defense effect
         self.animation_label = ttk.Label(self, text="", font=("", 48))
 
-
-        # --- Boss Frame (Right) ---
-        boss_frame = ttk.LabelFrame(main_frame, text="Boss", padding="10")
+        boss_frame = ttk.LabelFrame(main_frame, text=self._("boss"), padding="10")
         boss_frame.grid(row=0, column=2, sticky="nsew", padx=5)
         boss_frame.columnconfigure(0, weight=1)
-        boss_frame.rowconfigure(1, weight=1) # Make portrait area expand
+        boss_frame.rowconfigure(1, weight=1)
 
         ttk.Label(boss_frame, textvariable=self.boss_name_var).pack(pady=5)
         self.boss_portrait_label = ttk.Label(boss_frame)
@@ -336,35 +331,37 @@ class BossArenaWindow(tk.Toplevel):
 
         if win:
             self.player_won = True
-            self.player.boss_tier += 1  # Progress to the next boss tier
-            self.player.bosses_defeated += 1 # Increment defeated boss counter
-            self.add_to_log(f"Du hast {self.boss.name} besiegt!")
+            self.player.boss_tier += 1
+            self.player.bosses_defeated += 1
+            self.add_to_log(f"You have defeated {self.boss.name}!")
 
-            # Generate rewards
-            gold_reward = self.boss.max_hp # Reduced from 2x to 1x
+            gold_reward = self.boss.max_hp
             xp_reward = self.boss.max_hp * 5
             boss_item = generate_boss_reward(self.player)
 
-            # Add rewards to player
-            item_added = self.player.add_loot(gold_reward, boss_item)
+            loot_status, received_item = self.player.add_loot(gold_reward, boss_item)
             level_up_info = self.player.add_xp(xp_reward)
 
-            # Build victory message
-            message = f"Du hast gewonnen!\n\nBelohnungen:\n- {format_currency(gold_reward)}\n- {xp_reward} XP"
+            item_text = ""
             if boss_item:
-                if item_added:
-                    message += f"\n- {boss_item.name}"
-                else:
-                    message += f"\n- {boss_item.name} (Inventar voll!)"
+                if loot_status == "added" or loot_status == "auto_equipped":
+                    item_text = f"\n- {boss_item.name}"
+                else: # inventory_full
+                    item_text = f"\n- {boss_item.name} ({self._('inventory_full')})"
+
+            message = self._("victory_msg").format(
+                gold=format_currency(gold_reward),
+                xp=xp_reward,
+                item=item_text
+            )
 
             if level_up_info:
-                message += "\n\nLEVEL UP!"
+                message += f"\n\n{self._('level_up_title').upper()}!"
 
-            messagebox.showinfo("Sieg!", message, parent=self)
+            messagebox.showinfo(self._("victory"), message, parent=self)
         else:
-            self.add_to_log("Du wurdest besiegt...")
-            # Let the main game loop handle the game over state
-            messagebox.showerror("Niederlage", "Du hast den Kampf verloren!", parent=self)
+            self.add_to_log("You have been defeated...")
+            messagebox.showerror(self._("defeat"), self._("defeat_msg"), parent=self)
 
         self.on_close()
 
