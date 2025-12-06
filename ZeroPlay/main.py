@@ -74,8 +74,14 @@ class Game:
         callbacks = {
             'game_over': self.handle_game_over_and_restart,
         }
+
+        # Check for any pending messages from the rebirth process
+        initial_messages = self.character.pending_unlock_messages
+        self.character.pending_unlock_messages = [] # Clear messages after retrieving
+
         # The RpgGui now takes the character object directly
-        self.switch_frame(RpgGui, character=self.character, callbacks=callbacks)
+        self.switch_frame(RpgGui, character=self.character, callbacks=callbacks, initial_messages=initial_messages)
+
 
     def handle_game_over_and_restart(self, death_by_boss):
         """

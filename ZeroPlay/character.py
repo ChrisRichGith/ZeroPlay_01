@@ -37,6 +37,9 @@ class Character:
         self.bosses_defeated = 0
         self.rebirths = 0
         self.autosell_unlocked_notified = False
+        self.keep_inventory_size_unlocked = False
+        self.auto_equip_unlocked = False
+        self.pending_unlock_messages = []
         self.cheat_activated = False # Flag for highscore
         self.is_immortal = False
 
@@ -121,6 +124,23 @@ class Character:
         self.resources = {}
         self.boss_tier = 0 # Reset boss progression
 
+        # Reset inventory size only if the perk is not unlocked
+        if not self.keep_inventory_size_unlocked:
+            self.max_inventory_size = 10
+
+        # Check for new perk unlocks
+        if self.rebirths == 5 and not self.keep_inventory_size_unlocked:
+            self.keep_inventory_size_unlocked = True
+            self.pending_unlock_messages.append(
+                "Meilenstein erreicht! Deine Inventargröße wird bei zukünftigen Wiedergeburten nicht mehr zurückgesetzt."
+            )
+        if self.rebirths == 10 and not self.auto_equip_unlocked:
+            self.auto_equip_unlocked = True
+            self.pending_unlock_messages.append(
+                "Meilenstein erreicht! Bessere Ausrüstung wird jetzt automatisch angelegt."
+            )
+
+
         # Improve base attributes permanently
         for stat in self.base_attributes:
             # Increase by a percentage of the base, e.g., 10%
@@ -190,6 +210,15 @@ class Character:
         self.copper += copper
 
         if item:
+            # New Auto-Equip Logic
+            if self.auto_equip_unlocked and item.item_type == "Ausrüstung" and self.is_upgrade(item):
+                # We need to find the index of a dummy item to pass to equip, or -1 if new.
+                # Since we're equipping directly, we add to inventory, equip, and then it's removed.
+                self.inventory.append(item)
+                item_index_to_equip = len(self.inventory) - 1
+                self.equip(item_index_to_equip, is_auto_equip=True)
+                return "auto_equipped", item
+
             # Check for auto-sell condition
             if self.max_inventory_size >= 50 and item.item_type == "Ausrüstung" and not self.is_upgrade(item):
                 self.copper += item.value
@@ -260,12 +289,13 @@ class Character:
 
         return new_item_score > equipped_item_score
 
-    def equip(self, item_index):
+    def equip(self, item_index, is_auto_equip=False):
         """
         Equips an item from the inventory.
 
         Args:
             item_index (int): The index of the item in the inventory.
+            is_auto_equip (bool): If True, adds a pending message.
         """
         if 0 <= item_index < len(self.inventory):
             item_to_equip = self.inventory[item_index]
@@ -286,6 +316,9 @@ class Character:
                 self.equipment[slot] = item_to_equip
                 self.inventory.pop(item_index)
                 self.update_derived_stats()
+
+                if is_auto_equip:
+                    self.pending_unlock_messages.append(f"Auto-Ausrüstung: '{item_to_equip.name}' angelegt.")
 
     def get_total_stats(self):
         """

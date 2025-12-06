@@ -84,7 +84,7 @@ AVAILABLE_QUESTS = [
 class RpgGui(ttk.Frame):
     """Manages the main game GUI frame."""
 
-    def __init__(self, parent, character, callbacks):
+    def __init__(self, parent, character, callbacks, initial_messages=None):
         """Initializes the GUI with a character object."""
         super().__init__(parent)
         self.callbacks = callbacks
@@ -113,6 +113,16 @@ class RpgGui(ttk.Frame):
         self._setup_string_vars()
         self.create_widgets()
         self.update_display()
+
+        # Display any initial messages (e.g., from rebirth unlocks)
+        if initial_messages:
+            for msg in initial_messages:
+                self.show_unlock_message(msg)
+
+    def show_unlock_message(self, message):
+        """Shows a special message in the log for unlocks."""
+        self.add_to_log(f"⭐ {message} ⭐")
+        messagebox.showinfo("Meilenstein freigeschaltet!", message, parent=self)
 
     def handle_keypress(self, event):
         """Handles key presses for cheat codes."""
@@ -645,8 +655,18 @@ class RpgGui(ttk.Frame):
                     loot_message += f" (aber '{received_item.name}' passte nicht ins Inventar!)"
                 elif loot_status == "auto_sold":
                     loot_message += f" und '{received_item.name}' (automatisch verkauft für {format_currency(received_item.value)})"
+                elif loot_status == "auto_equipped":
+                     # The message is already in pending_unlock_messages, just update the loot text
+                    loot_message += f" und '{received_item.name}' (automatisch ausgerüstet!)"
 
             self.set_loot_text(loot_message)
+
+            # Display any new messages from auto-equipping
+            if self.player.pending_unlock_messages:
+                for msg in self.player.pending_unlock_messages:
+                    self.add_to_log(msg) # Add to log without popup
+                self.player.pending_unlock_messages = []
+
 
             if level_up_info:
                 self.pause_quest_loop()
@@ -682,7 +702,7 @@ class RpgGui(ttk.Frame):
         selected_indices = self.inventory_listbox.curselection()
         if not selected_indices: return
         item_index = selected_indices[0]
-        self.player.equip(item_index)
+        self.player.equip(item_index, is_auto_equip=False) # Manual equip is not auto
         self.update_display()
 
     def use_item(self):
@@ -801,7 +821,7 @@ class RpgGui(ttk.Frame):
 
         if messagebox.askyesno(title, message, parent=self):
             self.boss_arena_button.config(state=tk.DISABLED)
-            BossArenaWindow(self, self.player, boss_data, base_player_ilvl, on_close_callback=self.on_boss_arena_close)
+            BossArenaWindow(self, self.player, boss_data, base_player_ilvl, on_close_callback=self.on_boss_arena_close, rebirths=self.player.rebirths)
         else:
             self.resume_quest_loop()
 

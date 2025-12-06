@@ -7,9 +7,10 @@ import random
 class Boss:
     """Represents a boss enemy in the game."""
 
-    def __init__(self, name, hp, damage_range, image_path, item_level=1):
+    def __init__(self, name, hp, damage_range, image_path, item_level=1, rebirths=0):
         """
-        Initializes a new Boss, scaling its stats based on the player's item level.
+        Initializes a new Boss, scaling its stats based on the player's item level
+        and reducing them based on the number of rebirths.
 
         Args:
             name (str): The name of the boss.
@@ -17,19 +18,25 @@ class Boss:
             damage_range (tuple): A tuple containing the base min and max damage.
             image_path (str): The file path for the boss's image.
             item_level (int): The player's current item level, used for scaling.
+            rebirths (int): The number of times the player has been reborn.
         """
         self.name = name
         self.image_path = image_path
         self.is_weakened = False
 
-        # Scale stats based on item level
-        # We use a non-linear formula to make gear more impactful
-        scaling_factor = 1 + (item_level / 10) ** 1.2
+        # Step 1: Calculate the primary scaling based on item level
+        item_scaling_factor = 1 + (item_level / 10) ** 1.2
 
-        self.max_hp = int(hp * scaling_factor)
+        # Step 2: Calculate a reduction factor based on rebirths.
+        # Each rebirth makes the boss 5% weaker, capped at 50% reduction.
+        rebirth_reduction = min(0.5, rebirths * 0.05)
+        final_scaling_factor = item_scaling_factor * (1 - rebirth_reduction)
+
+        # Apply the final scaling factor to the boss's stats
+        self.max_hp = int(hp * final_scaling_factor)
         self.current_hp = self.max_hp
         min_dmg, max_dmg = damage_range
-        self.damage_range = (int(min_dmg * scaling_factor), int(max_dmg * scaling_factor))
+        self.damage_range = (int(min_dmg * final_scaling_factor), int(max_dmg * final_scaling_factor))
 
     def attack(self):
         """

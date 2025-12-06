@@ -30,12 +30,13 @@ class HighscoreWindow(tk.Toplevel):
         container.rowconfigure(0, weight=1)
 
         # Define the columns for the Treeview
-        columns = ("name", "level", "bosses", "resources", "best_equipment", "copper")
+        columns = ("name", "level", "rebirths", "bosses", "resources", "best_equipment", "copper")
         self.tree = ttk.Treeview(container, columns=columns, show="headings")
 
         # Define headings
         self.tree.heading("name", text="Name")
         self.tree.heading("level", text="Level")
+        self.tree.heading("rebirths", text="Wiedergeburten")
         self.tree.heading("bosses", text="Besiegte Bosse")
         self.tree.heading("resources", text="Ressourcen")
         self.tree.heading("best_equipment", text="Beste Ausrüstung")
@@ -44,6 +45,7 @@ class HighscoreWindow(tk.Toplevel):
         # Configure column widths
         self.tree.column("name", width=120)
         self.tree.column("level", width=50, anchor="center")
+        self.tree.column("rebirths", width=100, anchor="center")
         self.tree.column("bosses", width=100, anchor="center")
         self.tree.column("resources", width=200)
         self.tree.column("best_equipment", width=300)
@@ -85,6 +87,7 @@ class HighscoreWindow(tk.Toplevel):
             self.tree.insert("", tk.END, values=(
                 player_name,
                 score.get("level", 0),
+                score.get("rebirths", 0),
                 score.get("bosses_defeated", 0),
                 resources_str,
                 best_equipment,
