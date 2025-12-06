@@ -10,6 +10,7 @@ from class_selection_frame import ClassSelectionFrame
 from rpg_gui import RpgGui
 from save_load_system import save_game, load_game, get_save_files, SAVE_DIR
 from highscore_gui import HighscoreWindow
+from splash_screen import SplashScreen
 import os
 
 class Game:
@@ -25,10 +26,11 @@ class Game:
 
         self.current_frame = None
         self.character = None
+        self.language = "de" # Default language
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.show_start_menu()
+        self.show_splash_screen()
 
     def switch_frame(self, frame_class, *args, **kwargs):
         """Destroys the current frame and replaces it with a new one."""
@@ -38,6 +40,16 @@ class Game:
         self.current_frame = frame_class(self.root, *args, **kwargs)
         self.current_frame.pack(fill=tk.BOTH, expand=True)
 
+    def show_splash_screen(self):
+        """Displays the initial splash screen for language selection."""
+        callbacks = {'continue': self.start_game_from_splash}
+        self.switch_frame(SplashScreen, callbacks=callbacks)
+
+    def start_game_from_splash(self, selected_language):
+        """Sets the language and proceeds to the main menu."""
+        self.language = selected_language
+        self.show_start_menu()
+
     def show_start_menu(self):
         callbacks = {
             'load': self.load_and_show_game,
@@ -45,7 +57,7 @@ class Game:
             'quit': self.quit_game,
             'highscores': self.show_highscores
         }
-        self.switch_frame(StartMenu, callbacks=callbacks)
+        self.switch_frame(StartMenu, callbacks=callbacks, language=self.language)
 
     def show_highscores(self):
         HighscoreWindow(self.root)
