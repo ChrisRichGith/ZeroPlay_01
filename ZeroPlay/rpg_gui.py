@@ -836,29 +836,6 @@ class RpgGui(ttk.Frame):
         self.resume_quest_loop()
         self.update_button_states()
 
-    def handle_game_over(self):
-        self.game_over = True
-
-        # Save the character's score before showing the game over screen
-        save_highscore(self.player)
-
-        try:
-            img = Image.open("assets/grabstein.png")
-            img.thumbnail((220, 280))
-            photo_img = ImageTk.PhotoImage(img)
-
-            self.portrait_label.config(image=photo_img)
-            self.portrait_label.image = photo_img
-        except FileNotFoundError:
-            self.portrait_label.config(text="Game Over\n(Grabstein nicht gefunden)")
-
-        # Disable all action buttons
-        for button in [self.quest_button, self.auto_quest_button, self.trader_button, self.equip_button, self.use_button]:
-            button.config(state=tk.DISABLED)
-
-        # Show the custom game over window
-        GameOverWindow(self, self.player, on_close_callback=lambda: self.callbacks['game_over'](death_by_boss=False))
-
     def handle_game_over(self, death_by_boss=False):
         self.game_over = True
 
