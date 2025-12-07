@@ -96,6 +96,9 @@ TEXTS = {
         "level_up_title": "Level Aufstieg!",
         "level_up_msg": "Level Up! Du bist jetzt Level {level}!\n\nAttribut-Boni:\n{bonuses}",
         "milestone_unlocked": "Meilenstein freigeschaltet!",
+        "milestone_inventory_unlocked": "Deine Inventargröße wird bei zukünftigen Wiedergeburten nicht mehr zurückgesetzt.",
+        "milestone_auto_equip_unlocked": "Bessere Ausrüstung wird jetzt automatisch angelegt.",
+        "auto_equip_notification": "Auto-Ausrüstung: '{item_name}' angelegt.",
         "resource_hunt": "Ressourcenjagd",
         "start_resource_hunt": "Ressourcenjagd starten",
         "stop_resource_hunt": "Ressourcenjagd beenden",
@@ -162,6 +165,8 @@ TEXTS = {
         "defeat": "Niederlage",
         "victory_msg": "Du hast gewonnen!\n\nBelohnungen:\n- {gold}\n- {xp} XP\n- {item}",
         "defeat_msg": "Du hast den Kampf verloren!",
+        "boss_appears": "Ein wilder {boss_name} erscheint!",
+        "you_have_been_defeated": "Du wurdest besiegt...",
 
         # Game Over
         "game_over_title": "Game Over",
@@ -265,6 +270,9 @@ TEXTS = {
         "level_up_title": "Level Up!",
         "level_up_msg": "Level Up! You are now level {level}!\n\nAttribute Bonuses:\n{bonuses}",
         "milestone_unlocked": "Milestone Unlocked!",
+        "milestone_inventory_unlocked": "Your inventory size will no longer be reset on future rebirths.",
+        "milestone_auto_equip_unlocked": "Better gear will now be equipped automatically.",
+        "auto_equip_notification": "Auto-Equip: '{item_name}' equipped.",
         "resource_hunt": "Resource Hunt",
         "start_resource_hunt": "Start Resource Hunt",
         "stop_resource_hunt": "Stop Resource Hunt",
@@ -331,6 +339,8 @@ TEXTS = {
         "defeat": "Defeat",
         "victory_msg": "You have won!\n\nRewards:\n- {gold}\n- {xp} XP\n- {item}",
         "defeat_msg": "You have lost the fight!",
+        "boss_appears": "A wild {boss_name} appears!",
+        "you_have_been_defeated": "You have been defeated...",
 
         # Game Over
         "game_over_title": "Game Over",

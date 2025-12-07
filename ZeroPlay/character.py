@@ -131,15 +131,10 @@ class Character:
         # Check for new perk unlocks
         if self.rebirths == 5 and not self.keep_inventory_size_unlocked:
             self.keep_inventory_size_unlocked = True
-            self.pending_unlock_messages.append(
-                "Meilenstein erreicht! Deine Inventargröße wird bei zukünftigen Wiedergeburten nicht mehr zurückgesetzt."
-            )
+            self.pending_unlock_messages.append("milestone_inventory_unlocked")
         if self.rebirths == 10 and not self.auto_equip_unlocked:
             self.auto_equip_unlocked = True
-            self.pending_unlock_messages.append(
-                "Meilenstein erreicht! Bessere Ausrüstung wird jetzt automatisch angelegt."
-            )
-
+            self.pending_unlock_messages.append("milestone_auto_equip_unlocked")
 
         # Improve base attributes permanently
         for stat in self.base_attributes:
@@ -318,7 +313,7 @@ class Character:
                 self.update_derived_stats()
 
                 if is_auto_equip:
-                    self.pending_unlock_messages.append(f"Auto-Ausrüstung: '{item_to_equip.name}' angelegt.")
+                    self.pending_unlock_messages.append(f"auto_equip_notification:{item_to_equip.name}")
 
     def get_total_stats(self):
         """

@@ -125,8 +125,14 @@ class RpgGui(ttk.Frame):
         """Alias for get_text for shorter calls."""
         return get_text(self.language, key)
 
-    def show_unlock_message(self, message):
+    def show_unlock_message(self, message_key):
         """Shows a special message in the log for unlocks."""
+        if ":" in message_key:
+            key, value = message_key.split(":", 1)
+            message = self._(key).format(item_name=value)
+        else:
+            message = self._(message_key)
+
         self.add_to_log(f"⭐ {message} ⭐")
         messagebox.showinfo(self._("milestone_unlocked"), message, parent=self)
 

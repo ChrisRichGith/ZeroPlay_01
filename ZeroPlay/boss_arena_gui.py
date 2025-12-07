@@ -109,7 +109,7 @@ class BossArenaWindow(tk.Toplevel):
         self.log_text.config(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.log_text.config(state=tk.DISABLED)
-        self.add_to_log(f"A wild {self.boss.name} appears!")
+        self.add_to_log(self._("boss_appears").format(boss_name=self.boss.name))
 
         actions_frame = ttk.LabelFrame(middle_frame, text=self._("actions"), padding="10")
         actions_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
@@ -360,7 +360,7 @@ class BossArenaWindow(tk.Toplevel):
 
             messagebox.showinfo(self._("victory"), message, parent=self)
         else:
-            self.add_to_log("You have been defeated...")
+            self.add_to_log(self._("you_have_been_defeated"))
             messagebox.showerror(self._("defeat"), self._("defeat_msg"), parent=self)
 
         self.on_close()
