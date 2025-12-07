@@ -6,6 +6,7 @@ Centralized dictionary for all UI text translations.
 TEXTS = {
     "de": {
         # General
+        "game_title": "Chronicle of the Idle Hero",
         "warning": "Warnung",
         "error": "Fehler",
         "ok": "OK",
@@ -23,8 +24,14 @@ TEXTS = {
         "value": "Wert",
         "damage": "Schaden",
         "and": "und",
+        "resource_iron_ore": "Eisenerz",
+        "resource_jewel": "Juwel",
+        "item_type_equipment": "Ausrüstung",
+        "item_type_consumable": "Verbrauchsgut",
 
         # Splash Screen
+        "language_german": "Deutsch",
+        "language_english": "English",
         "splash_title": "Willkommen bei Chronicle of the Idle Hero!",
         "splash_objective_title": "Ziel des Spiels:",
         "splash_objective_text": "Werde stärker, besiege immer mächtigere Bosse und erklimme die Spitze der Highscore-Liste. Der Tod durch einen Boss ist nicht das Ende, sondern eine Wiedergeburt, die dich stärker macht. Aber sei gewarnt: Ein Scheitern bei einer normalen Quest führt zur endgültigen Löschung deines Helden!",
@@ -96,6 +103,9 @@ TEXTS = {
         "level_up_title": "Level Aufstieg!",
         "level_up_msg": "Level Up! Du bist jetzt Level {level}!\n\nAttribut-Boni:\n{bonuses}",
         "milestone_unlocked": "Meilenstein freigeschaltet!",
+        "milestone_inventory_unlocked": "Deine Inventargröße wird bei zukünftigen Wiedergeburten nicht mehr zurückgesetzt.",
+        "milestone_auto_equip_unlocked": "Bessere Ausrüstung wird jetzt automatisch angelegt.",
+        "auto_equip_notification": "Auto-Ausrüstung: '{item_name}' angelegt.",
         "resource_hunt": "Ressourcenjagd",
         "start_resource_hunt": "Ressourcenjagd starten",
         "stop_resource_hunt": "Ressourcenjagd beenden",
@@ -104,17 +114,41 @@ TEXTS = {
         "loot": "Loot",
         "did_not_fit": "passte nicht ins Inventar!",
         "auto_sold_for": "automatisch verkauft für",
+        "auto_equipped": "automatisch ausgerüstet",
         "cannot_use_item": "Dieser Gegenstand kann nicht benutzt werden.",
         "congratulations": "Glückwunsch!",
         "all_bosses_defeated": "Du hast bereits alle verfügbaren Bosse besiegt!",
         "boss_stats": "Werte des Bosses",
         "your_stats": "Deine Werte",
-        "boss_fight_warning": "Der Kampf kann nicht abgebrochen werden und die Gefahr des Todes ist sehr hoch.\n\nMöchtest du fortfahren?",
+        "boss_fight_warning": "Du bist dabei, {boss_name} (Stufe {player_ilvl}) herauszufordern.\n\n--- Werte des Bosses ---\nLebenspunkte: {boss_hp}\nSchaden: {boss_dmg_min} - {boss_dmg_max}\n\n--- Deine Werte ---\nLebenspunkte: {player_hp} / {player_max_hp}\nSchaden: {player_dmg_min} - {player_dmg_max}\n\nDer Kampf kann nicht abgebrochen werden und die Gefahr des Todes ist sehr hoch.\n\nMöchtest du fortfahren?",
         "image_not_found": "Bild nicht\ngefunden:\n{path}",
         "image_load_error": "Fehler beim\nLaden des Bildes:\n{e}",
         "game_over_tombstone_error": "Game Over\n(Grabstein nicht gefunden)",
         "cheat_immortality_on": "CHEAT AKTIVIERT: Unsterblichkeit!",
         "cheat_immortality_off": "CHEAT DEAKTIVIERT: Sterblichkeit wiederhergestellt.",
+        "cheat_resources_added": "Cheat: +100 Eisenerz, +100 Juwel",
+        "tooltip_type": "Typ: {item_type} ({slot})",
+        "tooltip_value": "Wert: {value}",
+        "countdown_closing_in": "Schließt in {seconds} Sekunden...",
+        "item_used_success": "{item_name} benutzt.",
+        "error_invalid_item": "Ungültiger Gegenstand.",
+        "error_class_cannot_wear": "Deine Klasse ({char_class}) kann '{armor_type}' nicht tragen.",
+
+        # Quests
+        "quest_slimes_name": "Töte alle Schleime",
+        "quest_iron_ore_name": "Bringe dem Schmied 5 Eisenerz",
+        "quest_princess_name": "Rette eine Prinzessin aus einem anderen Schloss",
+        "quest_bottles_name": "Sammle 10 leere Flaschen für den Alchemisten",
+        "quest_armor_polish_name": "Poliere die Rüstung des Königs (ohne Bezahlung)",
+        "quest_headphones_name": "Entwirre die Kopfhörer des Barden",
+        "quest_youth_recipe_name": "Finde das Rezept für ewige Jugend (und verliere es wieder)",
+        "quest_parrot_name": "Bringe dem königlichen Papagei das Fluchen bei",
+        "quest_sand_name": "Zähle alle Sandkörner am Strand",
+        "quest_library_name": "Sortiere die Bibliothek nach der Farbe der Buchrücken",
+        "quest_dragon_name": "Überzeuge einen Drachen, dass er nur ein überdimensionierter Wellensittich ist",
+        "quest_goblins_name": "Finde heraus, warum Goblins immer so schlechte Laune haben",
+        "quest_turtle_name": "Eskortiere eine sehr langsame Schildkröte über eine sehr breite Straße",
+        "quest_ceremony_name": "Störe eine wichtige Zeremonie durch lautes Kauen",
 
         # Trader
         "upgrade_inventory": "Inventar erweitern",
@@ -146,6 +180,7 @@ TEXTS = {
         "your_resources": "Deine Ressourcen:",
         "max_level_reached": "Maximale Stufe erreicht",
         "upgrade_success_title": "Erfolg!",
+        "max_stat_indicator": "(Max)",
 
         # Boss Arena
         "player": "Spieler",
@@ -160,14 +195,30 @@ TEXTS = {
         "weaken_boss": "Boss schwächen",
         "victory": "Sieg!",
         "defeat": "Niederlage",
-        "victory_msg": "Du hast gewonnen!\n\nBelohnungen:\n- {gold}\n- {xp} XP\n- {item}",
+        "victory_msg": "Du hast gewonnen!\n\nBelohnungen:\n- {gold}\n- {xp} XP{item}",
         "defeat_msg": "Du hast den Kampf verloren!",
+        "boss_appears": "Ein wilder {boss_name} erscheint!",
+        "you_have_been_defeated": "Du wurdest besiegt...",
+        "image_error_display": "Bildfehler:\n{e}",
+        "log_defense_result": "Verteidigungsergebnis: {symbol}",
+        "log_counter_attack": "Konterangriff! Du fügst dem Boss {damage} Schaden zu.",
+        "log_empowered_attack": "Dein nächster Angriff wird verstärkt!",
+        "log_light_heal": "Leichte Heilung! Du regenerierst {healing} Lebenspunkte.",
+        "log_boss_weakened": "{boss_name} ist für eine Runde geschwächt!",
+        "log_player_attack": "Du greifst an und verursachst {damage} Schaden bei {boss_name}!",
+        "log_boss_attack": "{boss_name} greift an und fügt dir {damage} Schaden zu!",
+        "log_defense_halves_damage": "Deine Verteidigung halbiert den Schaden auf {damage}!",
+        "log_boss_defeated": "Du hast {boss_name} besiegt!",
+        "critical_error_title": "Kritischer Fehler",
+        "critical_error_main_stat_message": "Konnte das Hauptattribut des Charakters nicht bestimmen. Kampf wird abgebrochen.",
 
         # Game Over
         "game_over_title": "Game Over",
         "rebirth_title": "Wiedergeburt!",
         "game_over_quest_text": "Ruhe in Frieden, {name}.\n\nDu bist bei einer Quest gestorben und dein Charakter wurde gelöscht.",
         "game_over_rebirth_text": "{name} wurde von einem Boss besiegt!\n\nDurch die Niederlage bist du stärker geworden.\nDu wirst auf Level 1 zurückgesetzt, aber deine Basisattribute wurden permanent verbessert!",
+        "tombstone_not_found_placeholder": "[Grabstein-Bild nicht gefunden]",
+        "rebirth_image_not_found_placeholder": "[Wiedergeburts-Bild nicht gefunden]",
 
         # Highscores
         "rebirths": "Wiedergeburten",
@@ -175,6 +226,7 @@ TEXTS = {
     },
     "en": {
         # General
+        "game_title": "Chronicle of the Idle Hero",
         "warning": "Warning",
         "error": "Error",
         "ok": "OK",
@@ -192,8 +244,14 @@ TEXTS = {
         "value": "Value",
         "damage": "Damage",
         "and": "and",
+        "resource_iron_ore": "Iron Ore",
+        "resource_jewel": "Jewel",
+        "item_type_equipment": "Equipment",
+        "item_type_consumable": "Consumable",
 
         # Splash Screen
+        "language_german": "Deutsch",
+        "language_english": "English",
         "splash_title": "Welcome to Chronicle of the Idle Hero!",
         "splash_objective_title": "Objective:",
         "splash_objective_text": "Grow stronger, defeat increasingly powerful bosses, and climb to the top of the highscore list. Death by a boss is not the end, but a rebirth that makes you stronger. But be warned: Failing a normal quest will lead to the permanent deletion of your hero!",
@@ -265,6 +323,9 @@ TEXTS = {
         "level_up_title": "Level Up!",
         "level_up_msg": "Level Up! You are now level {level}!\n\nAttribute Bonuses:\n{bonuses}",
         "milestone_unlocked": "Milestone Unlocked!",
+        "milestone_inventory_unlocked": "Your inventory size will no longer be reset on future rebirths.",
+        "milestone_auto_equip_unlocked": "Better gear will now be equipped automatically.",
+        "auto_equip_notification": "Auto-Equip: '{item_name}' equipped.",
         "resource_hunt": "Resource Hunt",
         "start_resource_hunt": "Start Resource Hunt",
         "stop_resource_hunt": "Stop Resource Hunt",
@@ -273,17 +334,41 @@ TEXTS = {
         "loot": "Loot",
         "did_not_fit": "did not fit in inventory!",
         "auto_sold_for": "auto-sold for",
+        "auto_equipped": "auto-equipped",
         "cannot_use_item": "This item cannot be used.",
         "congratulations": "Congratulations!",
         "all_bosses_defeated": "You have already defeated all available bosses!",
         "boss_stats": "Boss Stats",
         "your_stats": "Your Stats",
-        "boss_fight_warning": "The fight cannot be cancelled and the risk of death is very high.\n\nDo you wish to proceed?",
+        "boss_fight_warning": "You are about to challenge {boss_name} (Level {player_ilvl}).\n\n--- Boss Stats ---\nHit Points: {boss_hp}\nDamage: {boss_dmg_min} - {boss_dmg_max}\n\n--- Your Stats ---\nHit Points: {player_hp} / {player_max_hp}\nDamage: {player_dmg_min} - {player_dmg_max}\n\nThe fight cannot be cancelled and the risk of death is very high.\n\nDo you wish to proceed?",
         "image_not_found": "Image not\nfound:\n{path}",
         "image_load_error": "Error loading\nimage:\n{e}",
         "game_over_tombstone_error": "Game Over\n(Tombstone not found)",
         "cheat_immortality_on": "CHEAT ACTIVATED: Immortality!",
         "cheat_immortality_off": "CHEAT DEACTIVATED: Mortality restored.",
+        "cheat_resources_added": "Cheat: +100 Iron Ore, +100 Jewel",
+        "tooltip_type": "Type: {item_type} ({slot})",
+        "tooltip_value": "Value: {value}",
+        "countdown_closing_in": "Closes in {seconds} seconds...",
+        "item_used_success": "Used {item_name}.",
+        "error_invalid_item": "Invalid item.",
+        "error_class_cannot_wear": "Your class ({char_class}) cannot wear '{armor_type}'.",
+
+        # Quests
+        "quest_slimes_name": "Kill all slimes",
+        "quest_iron_ore_name": "Bring the blacksmith 5 iron ore",
+        "quest_princess_name": "Save a princess from another castle",
+        "quest_bottles_name": "Collect 10 empty bottles for the alchemist",
+        "quest_armor_polish_name": "Polish the king's armor (unpaid)",
+        "quest_headphones_name": "Untangle the bard's headphones",
+        "quest_youth_recipe_name": "Find the recipe for eternal youth (and lose it again)",
+        "quest_parrot_name": "Teach the royal parrot to curse",
+        "quest_sand_name": "Count all the grains of sand on the beach",
+        "quest_library_name": "Sort the library by the color of the book spines",
+        "quest_dragon_name": "Convince a dragon he's just an oversized budgie",
+        "quest_goblins_name": "Find out why goblins are always in a bad mood",
+        "quest_turtle_name": "Escort a very slow turtle across a very wide road",
+        "quest_ceremony_name": "Disrupt an important ceremony by chewing loudly",
 
         # Trader
         "upgrade_inventory": "Upgrade Inventory",
@@ -315,6 +400,7 @@ TEXTS = {
         "your_resources": "Your Resources:",
         "max_level_reached": "Max level reached",
         "upgrade_success_title": "Success!",
+        "max_stat_indicator": "(Max)",
 
         # Boss Arena
         "player": "Player",
@@ -329,14 +415,30 @@ TEXTS = {
         "weaken_boss": "Weaken Boss",
         "victory": "Victory!",
         "defeat": "Defeat",
-        "victory_msg": "You have won!\n\nRewards:\n- {gold}\n- {xp} XP\n- {item}",
+        "victory_msg": "You have won!\n\nRewards:\n- {gold}\n- {xp} XP{item}",
         "defeat_msg": "You have lost the fight!",
+        "boss_appears": "A wild {boss_name} appears!",
+        "you_have_been_defeated": "You have been defeated...",
+        "image_error_display": "Image Error:\n{e}",
+        "log_defense_result": "Defense result: {symbol}",
+        "log_counter_attack": "Counter-attack! You deal {damage} damage to the boss.",
+        "log_empowered_attack": "Your next attack will be empowered!",
+        "log_light_heal": "Light heal! You regenerate {healing} hit points.",
+        "log_boss_weakened": "{boss_name} is weakened for one turn!",
+        "log_player_attack": "You attack, dealing {damage} damage to {boss_name}!",
+        "log_boss_attack": "{boss_name} attacks, dealing {damage} damage to you!",
+        "log_defense_halves_damage": "Your defense halves the damage to {damage}!",
+        "log_boss_defeated": "You have defeated {boss_name}!",
+        "critical_error_title": "Critical Error",
+        "critical_error_main_stat_message": "Could not determine the character's main attribute. Aborting fight.",
 
         # Game Over
         "game_over_title": "Game Over",
         "rebirth_title": "Rebirth!",
         "game_over_quest_text": "Rest in peace, {name}.\n\nYou died on a quest and your character has been deleted.",
         "game_over_rebirth_text": "{name} was defeated by a boss!\n\nThrough defeat, you have grown stronger.\nYou are reset to level 1, but your base attributes have been permanently increased!",
+        "tombstone_not_found_placeholder": "[Tombstone image not found]",
+        "rebirth_image_not_found_placeholder": "[Rebirth image not found]",
 
         # Highscores
         "rebirths": "Rebirths",
@@ -349,4 +451,5 @@ def get_text(lang, key):
     Returns the translated text for a given key and language.
     Falls back to German if the key is not found in the selected language.
     """
-    return TEXTS.get(lang, TEXTS["de"]).get(key, TEXTS["de"].get(key, key))
+    # Fallback to English if the key is missing in the current language
+    return TEXTS.get(lang, TEXTS["en"]).get(key, TEXTS["en"].get(key, key))

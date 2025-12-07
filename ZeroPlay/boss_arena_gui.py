@@ -109,7 +109,7 @@ class BossArenaWindow(tk.Toplevel):
         self.log_text.config(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.log_text.config(state=tk.DISABLED)
-        self.add_to_log(f"A wild {self.boss.name} appears!")
+        self.add_to_log(self._("boss_appears").format(boss_name=self.boss.name))
 
         actions_frame = ttk.LabelFrame(middle_frame, text=self._("actions"), padding="10")
         actions_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
@@ -156,7 +156,7 @@ class BossArenaWindow(tk.Toplevel):
             self.player_photo = ImageTk.PhotoImage(player_img)
             self.player_portrait_label.config(image=self.player_photo)
         except Exception as e:
-            self.player_portrait_label.config(text=f"Bildfehler:\n{e}")
+            self.player_portrait_label.config(text=self._("image_error_display").format(e=e))
 
         try:
             boss_img = Image.open(self.boss.image_path)
@@ -164,7 +164,7 @@ class BossArenaWindow(tk.Toplevel):
             self.boss_photo = ImageTk.PhotoImage(boss_img)
             self.boss_portrait_label.config(image=self.boss_photo)
         except Exception as e:
-            self.boss_portrait_label.config(text=f"Bildfehler:\n{e}")
+            self.boss_portrait_label.config(text=self._("image_error_display").format(e=e))
 
     def update_display(self):
         """Updates all dynamic widgets."""
@@ -236,25 +236,25 @@ class BossArenaWindow(tk.Toplevel):
 
         def handle_roll_result():
             symbol = self.DEFENSE_SYMBOLS[roll]
-            self.add_to_log(f"Verteidigungsergebnis: {symbol}")
+            self.add_to_log(self._("log_defense_result", symbol=symbol))
             if roll == 1:
                 # 1. Counter-attack
                 counter_damage = self.player.get_total_stats()[self.player.main_stat] // 4
-                self.add_to_log(f"Konterangriff! Du fügst dem Boss {counter_damage} Schaden zu.")
+                self.add_to_log(self._("log_counter_attack", damage=counter_damage))
                 self.boss.take_damage(counter_damage)
             elif roll == 2:
                 # 2. Empowered next attack
                 self.player_is_empowered = True
-                self.add_to_log("Dein nächster Angriff wird verstärkt!")
+                self.add_to_log(self._("log_empowered_attack"))
             elif roll == 3:
                 # 3. Light heal
                 heal_amount = self.player.max_lp // 10  # Heal for 10% of max HP
                 self.player.current_lp = min(self.player.max_lp, self.player.current_lp + heal_amount)
-                self.add_to_log(f"Leichte Heilung! Du regenerierst {heal_amount} Lebenspunkte.")
+                self.add_to_log(self._("log_light_heal", healing=heal_amount))
             elif roll == 4:
                 # 4. Weaken the boss
                 self.boss.is_weakened = True
-                self.add_to_log(f"{self.boss.name} ist für eine Runde geschwächt!")
+                self.add_to_log(self._("log_boss_weakened", boss_name=self.boss.name))
 
             self.after(1000, self.boss_turn)
 
@@ -265,33 +265,28 @@ class BossArenaWindow(tk.Toplevel):
         if not self.is_player_turn or self.is_fight_over:
             return
 
-        # Defensive check for main_stat, especially for characters from old save files
         if not hasattr(self.player, 'main_stat') or not self.player.main_stat:
             self.player.main_stat = CLASSES.get(self.player.klasse, {}).get("main_stat")
 
         player_stats = self.player.get_total_stats()
         main_stat = self.player.main_stat
 
-        # Final check to prevent a crash if main_stat is still not found
         if not main_stat or main_stat not in player_stats:
-            self.add_to_log(f"Fehler: Hauptattribut '{main_stat}' für Klasse '{self.player.klasse}' nicht gefunden!")
-            messagebox.showerror("Kritischer Fehler", "Konnte das Hauptattribut des Charakters nicht bestimmen. Kampf wird abgebrochen.", parent=self)
+            messagebox.showerror(self._("critical_error_title"), self._("critical_error_main_stat_message"), parent=self)
             self.on_close()
             return
 
         if self.boss.is_weakened:
-            self.add_to_log(f"{self.boss.name} ist geschwächt und erleidet mehr Schaden!")
             self.boss.is_weakened = False
 
         player_damage = random.randint(player_stats[main_stat] // 2, player_stats[main_stat])
 
         if self.player_is_empowered:
             player_damage = int(player_damage * 1.5)
-            self.add_to_log("Verstärkter Angriff!")
             self.player_is_empowered = False
 
         self.boss.take_damage(player_damage)
-        self.add_to_log(f"Du greifst an und verursachst {player_damage} Schaden bei {self.boss.name}!")
+        self.add_to_log(self._("log_player_attack", damage=player_damage, boss_name=self.boss.name))
         self.update_display()
 
         if self.boss.is_defeated():
@@ -299,7 +294,7 @@ class BossArenaWindow(tk.Toplevel):
         else:
             self.is_player_turn = False
             self.update_display()
-            self.after(1000, self.boss_turn) # Boss attacks after a delay
+            self.after(1000, self.boss_turn)
 
     def boss_turn(self):
         """Handles the boss's turn to attack."""
@@ -309,12 +304,12 @@ class BossArenaWindow(tk.Toplevel):
         boss_damage = self.boss.attack()
 
         if self.is_defending:
-            boss_damage //= 2 # Halve the damage
-            self.add_to_log(f"Deine Verteidigung halbiert den Schaden auf {boss_damage}!")
-            self.is_defending = False # Reset defense state
+            boss_damage //= 2
+            self.add_to_log(self._("log_defense_halves_damage", damage=boss_damage))
+            self.is_defending = False
 
         self.player.take_damage(boss_damage)
-        self.add_to_log(f"{self.boss.name} greift an und fügt dir {boss_damage} Schaden zu!")
+        self.add_to_log(self._("log_boss_attack", boss_name=self.boss.name, damage=boss_damage))
         self.update_display()
 
         if self.player.current_lp <= 0:
@@ -333,21 +328,22 @@ class BossArenaWindow(tk.Toplevel):
             self.player_won = True
             self.player.boss_tier += 1
             self.player.bosses_defeated += 1
-            self.add_to_log(f"You have defeated {self.boss.name}!")
+            self.add_to_log(self._("log_boss_defeated", boss_name=self.boss.name))
 
             gold_reward = self.boss.max_hp
             xp_reward = self.boss.max_hp * 5
             boss_item = generate_boss_reward(self.player)
 
-            loot_status, received_item = self.player.add_loot(gold_reward, boss_item)
+            loot_status, _ = self.player.add_loot(gold_reward, boss_item)
             level_up_info = self.player.add_xp(xp_reward)
 
             item_text = ""
             if boss_item:
+                item_name = boss_item.name
                 if loot_status == "added" or loot_status == "auto_equipped":
-                    item_text = f"\n- {boss_item.name}"
-                else: # inventory_full
-                    item_text = f"\n- {boss_item.name} ({self._('inventory_full')})"
+                    item_text = f"\n- {item_name}"
+                else:
+                    item_text = f"\n- {item_name} ({self._('inventory_full')})"
 
             message = self._("victory_msg").format(
                 gold=format_currency(gold_reward),
@@ -360,7 +356,7 @@ class BossArenaWindow(tk.Toplevel):
 
             messagebox.showinfo(self._("victory"), message, parent=self)
         else:
-            self.add_to_log("You have been defeated...")
+            self.add_to_log(self._("you_have_been_defeated"))
             messagebox.showerror(self._("defeat"), self._("defeat_msg"), parent=self)
 
         self.on_close()

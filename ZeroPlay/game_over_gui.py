@@ -52,7 +52,7 @@ class GameOverWindow(tk.Toplevel):
                 image_label = ttk.Label(container, image=self.tombstone_photo)
                 image_label.pack(pady=(10, 10))
             except FileNotFoundError:
-                ttk.Label(container, text="[Tombstone image not found]").pack(pady=(10,10))
+                ttk.Label(container, text=self._("tombstone_not_found_placeholder")).pack(pady=(10,10))
 
         message = self._("game_over_quest_text").format(name=player.name)
         message_label = ttk.Label(container, text=message, font=("Helvetica", 12), justify=tk.CENTER)
@@ -75,7 +75,7 @@ class GameOverWindow(tk.Toplevel):
                 image_label = ttk.Label(container, image=self.rebirth_photo)
                 image_label.pack(pady=(10, 10))
             except FileNotFoundError:
-                 ttk.Label(container, text="[Rebirth image not found]").pack(pady=(10,10))
+                 ttk.Label(container, text=self._("rebirth_image_not_found_placeholder")).pack(pady=(10,10))
 
         message = self._("game_over_rebirth_text").format(name=player.name)
         message_label = ttk.Label(container, text=message, font=("Helvetica", 12), justify=tk.CENTER)

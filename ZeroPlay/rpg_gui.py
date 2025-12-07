@@ -23,63 +23,22 @@ from game_data import BOSS_TIERS
 from translations import get_text
 
 # Liste verfügbarer Quests
+# Note: The 'name' is now a translation key.
 AVAILABLE_QUESTS = [
-    {
-        "name": "Töte alle Schleime",
-        "image": "assets/quests/kill_all_slimes.jpg"
-    },
-    {
-        "name": "Bringe dem Schmied 5 Eisenerz",
-        "image": "assets/quests/bring_5_iron_ore_to_the_blacksmith.jpg"
-    },
-    {
-        "name": "Rette eine Prinzessin aus einem anderen Schloss",
-        "image": "assets/quests/save_a_princess_from_another_castle.jpg"
-    },
-    {
-        "name": "Sammle 10 leere Flaschen für den Alchemisten",
-        "image": "assets/quests/collect_10_empty_bottles_for_the_alchemist.jpg"
-    },
-    {
-        "name": "Poliere die Rüstung des Königs (ohne Bezahlung)",
-        "image": "assets/quests/polish_the_king's_armor_(unpaid).jpg"
-    },
-    {
-        "name": "Entwirre die Kopfhörer des Barden",
-        "image": "assets/quests/untangle_the_bard's_headphones.jpg"
-    },
-    {
-        "name": "Finde das Rezept für ewige Jugend (und verliere es wieder)",
-        "image": "assets/quests/find_the_recipe_for_eternal_youth_(and_lose_it_again).jpg"
-    },
-    {
-        "name": "Bringe dem königlichen Papagei das Fluchen bei",
-        "image": "assets/quests/teach_the_royal_parrot_to_curse.jpg"
-    },
-    {
-        "name": "Zähle alle Sandkörner am Strand",
-        "image": "assets/quests/count_all_the_grains_of_sand_on_the_beach.jpg"
-    },
-    {
-        "name": "Sortiere die Bibliothek nach der Farbe der Buchrücken",
-        "image": "assets/quests/sort_the_library_by_the_color_of_the_book_spines.jpg"
-    },
-    {
-        "name": "Überzeuge einen Drachen, dass er nur ein überdimensionierter Wellensittich ist",
-        "image": "assets/quests/convince_a_dragon_he's_just_an_oversized_budgie.jpg"
-    },
-    {
-        "name": "Finde heraus, warum Goblins immer so schlechte Laune haben",
-        "image": "assets/quests/find_out_why_goblins_are_always_in_a_bad_mood.jpg"
-    },
-    {
-        "name": "Eskortiere eine sehr langsame Schildkröte über eine sehr breite Straße",
-        "image": "assets/quests/escort_a_very_slow_turtle_across_a_very_wide_road.jpg"
-    },
-    {
-        "name": "Störe eine wichtige Zeremonie durch lautes Kauen",
-        "image": "assets/quests/disrupt_an_important_ceremony_by_chewing_loudly.jpg"
-    }
+    {"name": "quest_slimes_name", "image": "assets/quests/kill_all_slimes.jpg"},
+    {"name": "quest_iron_ore_name", "image": "assets/quests/bring_5_iron_ore_to_the_blacksmith.jpg"},
+    {"name": "quest_princess_name", "image": "assets/quests/save_a_princess_from_another_castle.jpg"},
+    {"name": "quest_bottles_name", "image": "assets/quests/collect_10_empty_bottles_for_the_alchemist.jpg"},
+    {"name": "quest_armor_polish_name", "image": "assets/quests/polish_the_king's_armor_(unpaid).jpg"},
+    {"name": "quest_headphones_name", "image": "assets/quests/untangle_the_bard's_headphones.jpg"},
+    {"name": "quest_youth_recipe_name", "image": "assets/quests/find_the_recipe_for_eternal_youth_(and_lose_it_again).jpg"},
+    {"name": "quest_parrot_name", "image": "assets/quests/teach_the_royal_parrot_to_curse.jpg"},
+    {"name": "quest_sand_name", "image": "assets/quests/count_all_the_grains_of_sand_on_the_beach.jpg"},
+    {"name": "quest_library_name", "image": "assets/quests/sort_the_library_by_the_color_of_the_book_spines.jpg"},
+    {"name": "quest_dragon_name", "image": "assets/quests/convince_a_dragon_he's_just_an_oversized_budgie.jpg"},
+    {"name": "quest_goblins_name", "image": "assets/quests/find_out_why_goblins_are_always_in_a_bad_mood.jpg"},
+    {"name": "quest_turtle_name", "image": "assets/quests/escort_a_very_slow_turtle_across_a_very_wide_road.jpg"},
+    {"name": "quest_ceremony_name", "image": "assets/quests/disrupt_an_important_ceremony_by_chewing_loudly.jpg"}
 ]
 
 class RpgGui(ttk.Frame):
@@ -125,8 +84,14 @@ class RpgGui(ttk.Frame):
         """Alias for get_text for shorter calls."""
         return get_text(self.language, key)
 
-    def show_unlock_message(self, message):
+    def show_unlock_message(self, message_key):
         """Shows a special message in the log for unlocks."""
+        if ":" in message_key:
+            key, value = message_key.split(":", 1)
+            message = self._(key).format(item_name=value)
+        else:
+            message = self._(message_key)
+
         self.add_to_log(f"⭐ {message} ⭐")
         messagebox.showinfo(self._("milestone_unlocked"), message, parent=self)
 
@@ -138,7 +103,7 @@ class RpgGui(ttk.Frame):
 
         if "showmethemoney" in self.typed_string:
             self.player.add_cheat_resources()
-            self.set_loot_text("Cheat: +100 Eisenerz, +100 Juwel")
+            self.set_loot_text(self._("cheat_resources_added"))
             self.update_display()
             self.typed_string = "" # Reset after use
 
@@ -191,8 +156,8 @@ class RpgGui(ttk.Frame):
         notebook.grid(row=0, column=0, sticky="nsew")
         equipment_tab = ttk.Frame(notebook)
         inventory_tab = ttk.Frame(notebook)
-        notebook.add(equipment_tab, text='Ausrüstung')
-        notebook.add(inventory_tab, text='Inventar')
+        notebook.add(equipment_tab, text=self._('equipment'))
+        notebook.add(inventory_tab, text=self._('inventory'))
 
         self._create_equipment_frame(equipment_tab)
         self._create_inventory_frame(inventory_tab)
@@ -266,7 +231,7 @@ class RpgGui(ttk.Frame):
                 # Keep a reference to the image to prevent it from being garbage collected
                 self.portrait_label.image = photo_img
         except FileNotFoundError:
-            self.portrait_label.config(text=f"Bild nicht\ngefunden:\n{self.player.image_path}")
+            self.portrait_label.config(text=self._("image_not_found").format(path=self.player.image_path))
         except Exception as e:
             self.portrait_label.config(text=self._("image_load_error").format(e=e))
 
@@ -373,12 +338,19 @@ class RpgGui(ttk.Frame):
             index = self.inventory_listbox.nearest(y)
             item = self.player.inventory[index]
 
+            # Translate item type
+            item_type_key = f"item_type_{item.item_type.lower().replace(' ', '_')}"
+            translated_item_type = self._(item_type_key)
+
             # Format the text
             text = f"{item.name}\n"
-            text += f"Typ: {item.item_type} ({item.slot})\n"
-            text += f"Wert: {format_currency(item.value)}\n\n"
+            text += self._("tooltip_type").format(item_type=translated_item_type, slot=self._(item.slot.lower())) + "\n"
+            text += self._("tooltip_value").format(value=format_currency(item.value)) + "\n\n"
             for stat, value in item.stats_boost.items():
-                text += f"{stat}: +{value}\n"
+                # Translate stat name
+                stat_key = {"Stärke": "strength", "Agilität": "agility", "Intelligenz": "intelligence", "Glück": "luck"}.get(stat, stat)
+                translated_stat = self._(stat_key)
+                text += f"{translated_stat}: +{value}\n"
             return text.strip()
         except (IndexError, tk.TclError):
             return ""
@@ -523,9 +495,10 @@ class RpgGui(ttk.Frame):
                 self.toggle_auto_quest()
             return
 
-        selected_quest = random.choice(AVAILABLE_QUESTS)
-        quest_name = selected_quest["name"]
-        quest_image_path = selected_quest["image"]
+        selected_quest_data = random.choice(AVAILABLE_QUESTS)
+        quest_name_key = selected_quest_data["name"]
+        quest_name = self._(quest_name_key) # Translate the quest name
+        quest_image_path = selected_quest_data["image"]
 
         try:
             img = Image.open(quest_image_path)
@@ -558,6 +531,7 @@ class RpgGui(ttk.Frame):
             if canvas_width > 1 and canvas_height > 1:
                 x = random.randint(10, canvas_width - 10)
                 y = random.randint(10, canvas_height - 10)
+                # Use the original German keys for the internal logic
                 resource_type, symbol = ("Eisenerz", "🪨") if random.random() < 0.8 else ("Juwel", "💎")
                 orb_id = self.minigame_canvas.create_text(x, y, text=symbol, font=("", 14))
                 self.minigame_canvas.tag_bind(orb_id, "<Button-1>", lambda event, o_id=orb_id: self.on_orb_click(o_id))
@@ -629,7 +603,7 @@ class RpgGui(ttk.Frame):
             if level_up_info:
                 self.pause_quest_loop()
                 level_up_summary = self._("level_up_msg").format(level=self.player.level, bonuses="\n".join(level_up_info))
-                CountdownDialog(self, title=self._("level_up_title"), message=level_up_summary, on_close_callback=self.resume_quest_loop)
+                CountdownDialog(self, title=self._("level_up_title"), message=level_up_summary, on_close_callback=self.resume_quest_loop, language=self.language)
 
             self.current_quest = None
             self.progress_bar['value'] = 0
@@ -668,7 +642,7 @@ class RpgGui(ttk.Frame):
         item_index = selected_indices[0]
         success, message = self.player.use_item(item_index)
         if not success:
-            messagebox.showwarning("Fehler", message)
+            messagebox.showwarning(self._("error"), message, parent=self)
         self.update_display()
 
     def on_item_double_click(self, event=None):
@@ -739,41 +713,39 @@ class RpgGui(ttk.Frame):
         self.pause_quest_loop()
         current_tier = self.player.boss_tier
         if current_tier >= len(BOSS_TIERS):
-            messagebox.showinfo("Glückwunsch!", "Du hast bereits alle verfügbaren Bosse besiegt!", parent=self)
+            messagebox.showinfo(self._("congratulations"), self._("all_bosses_defeated"), parent=self)
             self.resume_quest_loop()
             return
 
         boss_data = BOSS_TIERS[current_tier]
-        # Use BASE item level for scaling the boss to ignore blacksmith upgrades
         base_player_ilvl = self.player.get_base_item_level()
-        actual_player_ilvl = self.player.get_item_level() # For display and passing to the arena window
+        actual_player_ilvl = self.player.get_item_level()
 
-        # Create a temporary boss instance to get scaled stats
         temp_boss = Boss(
             name=boss_data["name"],
             hp=boss_data["hp"],
             damage_range=boss_data["damage"],
             image_path=boss_data["image_path"],
-            item_level=base_player_ilvl # Scale boss based on non-upgraded gear
+            item_level=base_player_ilvl,
+            rebirths=self.player.rebirths
         )
 
-        # Get player combat stats for comparison
         player_stats = self.player.get_total_stats()
         main_stat_val = player_stats.get(self.player.main_stat, 0)
         min_damage = main_stat_val // 2
         max_damage = main_stat_val
 
-        title = "Warnung"
-        message = (
-            f"Du bist dabei, {temp_boss.name} (Stufe {actual_player_ilvl}) herauszufordern.\n\n"
-            "--- Werte des Bosses ---\n"
-            f"Lebenspunkte: {temp_boss.max_hp}\n"
-            f"Schaden: {temp_boss.damage_range[0]} - {temp_boss.damage_range[1]}\n\n"
-            "--- Deine Werte ---\n"
-            f"Lebenspunkte: {self.player.current_lp} / {self.player.max_lp}\n"
-            f"Schaden: {min_damage} - {max_damage}\n\n"
-            "Der Kampf kann nicht abgebrochen werden und die Gefahr des Todes ist sehr hoch.\n\n"
-            "Möchtest du fortfahren?"
+        title = self._("warning")
+        message = self._("boss_fight_warning").format(
+            boss_name=temp_boss.name,
+            player_ilvl=actual_player_ilvl,
+            boss_hp=temp_boss.max_hp,
+            boss_dmg_min=temp_boss.damage_range[0],
+            boss_dmg_max=temp_boss.damage_range[1],
+            player_hp=self.player.current_lp,
+            player_max_hp=self.player.max_lp,
+            player_dmg_min=min_damage,
+            player_dmg_max=max_damage
         )
 
         if messagebox.askyesno(title, message, parent=self):
@@ -807,7 +779,7 @@ class RpgGui(ttk.Frame):
             self.portrait_label.config(image=photo_img)
             self.portrait_label.image = photo_img
         except FileNotFoundError:
-            self.portrait_label.config(text="Game Over\n(Grabstein nicht gefunden)")
+            self.portrait_label.config(text=self._("game_over_tombstone_error"))
 
         # Disable all action buttons
         for button in [self.quest_button, self.auto_quest_button, self.trader_button, self.equip_button, self.use_button]:
@@ -907,9 +879,10 @@ class Tooltip:
 
 class CountdownDialog(tk.Toplevel):
     """A modal dialog with a countdown timer that closes automatically."""
-    def __init__(self, parent, title, message, countdown=5, on_close_callback=None):
+    def __init__(self, parent, title, message, countdown=5, on_close_callback=None, language="de"):
         super().__init__(parent)
         self.title(title)
+        self.language = language
         self.message = message
         self.countdown = countdown
         self.parent = parent
@@ -922,10 +895,10 @@ class CountdownDialog(tk.Toplevel):
         # UI Elements
         ttk.Label(self, text=self.message, wraplength=300, justify=tk.LEFT).pack(padx=20, pady=10)
 
-        self.countdown_label = ttk.Label(self, text=f"Schließt in {self.countdown} Sekunden...")
+        self.countdown_label = ttk.Label(self, text=self._("countdown_closing_in").format(seconds=self.countdown))
         self.countdown_label.pack(pady=5)
 
-        ok_button = ttk.Button(self, text="OK", command=self.destroy)
+        ok_button = ttk.Button(self, text=self._("ok"), command=self.destroy)
         ok_button.pack(pady=10, padx=20, fill=tk.X)
 
         self.protocol("WM_DELETE_WINDOW", self.destroy)
@@ -936,9 +909,13 @@ class CountdownDialog(tk.Toplevel):
         # Center the window over its parent
         center_window(self, self.parent.winfo_toplevel())
 
+    def _(self, key):
+        """Alias for get_text for shorter calls."""
+        return get_text(self.language, key)
+
     def update_countdown(self):
         if self.countdown > 0:
-            self.countdown_label.config(text=f"Schließt in {self.countdown} Sekunden...")
+            self.countdown_label.config(text=self._("countdown_closing_in").format(seconds=self.countdown))
             self.countdown -= 1
             self._after_id = self.after(1000, self.update_countdown)
         else:

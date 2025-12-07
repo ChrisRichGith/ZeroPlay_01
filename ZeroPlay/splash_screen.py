@@ -32,18 +32,18 @@ class SplashScreen(ttk.Frame):
         container.pack(expand=True)
 
         # Title Label
-        title_label = ttk.Label(container, text="Chronicle of the Idle Hero", font=("Helvetica", 24, "bold"))
-        title_label.pack(pady=(0, 20))
+        self.title_label_main = ttk.Label(container, font=("Helvetica", 24, "bold"))
+        self.title_label_main.pack(pady=(0, 20))
 
         # Language Selection
         lang_frame = ttk.Frame(container)
         lang_frame.pack(pady=10)
         self.lang_label = ttk.Label(lang_frame, text="")
         self.lang_label.pack(side=tk.LEFT, padx=5)
-        de_radio = ttk.Radiobutton(lang_frame, text="Deutsch", variable=self.selected_lang, value="de")
-        de_radio.pack(side=tk.LEFT)
-        en_radio = ttk.Radiobutton(lang_frame, text="English", variable=self.selected_lang, value="en")
-        en_radio.pack(side=tk.LEFT, padx=10)
+        self.de_radio = ttk.Radiobutton(lang_frame, variable=self.selected_lang, value="de")
+        self.de_radio.pack(side=tk.LEFT)
+        self.en_radio = ttk.Radiobutton(lang_frame, variable=self.selected_lang, value="en")
+        self.en_radio.pack(side=tk.LEFT, padx=10)
 
         # Introduction Text
         self.intro_frame = ttk.Frame(container, padding=10)
@@ -70,7 +70,10 @@ class SplashScreen(ttk.Frame):
     def update_text(self, *args):
         """Updates the UI text based on the selected language."""
         lang = self.selected_lang.get()
+        self.title_label_main.config(text=get_text(lang, "game_title"))
         self.lang_label.config(text=get_text(lang, "language"))
+        self.de_radio.config(text=get_text(lang, "language_german"))
+        self.en_radio.config(text=get_text(lang, "language_english"))
         self.title_label.config(text=get_text(lang, "splash_title"))
         self.objective_title_label.config(text=get_text(lang, "splash_objective_title"))
         self.objective_text_label.config(text=get_text(lang, "splash_objective_text"))
