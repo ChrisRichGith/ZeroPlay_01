@@ -148,7 +148,8 @@ class RpgGui(ttk.Frame):
         self.char_level_var = tk.StringVar()
         self.item_level_var = tk.StringVar()
         self.char_gold_var = tk.StringVar()
-        self.stats_vars = {stat: tk.StringVar() for stat in ['Stärke', 'Intelligenz', 'Glück']}
+        # Use the original German keys for stats internally, including Agilität
+        self.stats_vars = {stat: tk.StringVar() for stat in ['Stärke', 'Agilität', 'Intelligenz', 'Glück']}
         self.equipment_vars = {slot: tk.StringVar() for slot in ['Kopf', 'Brust', 'Waffe']}
         self.lp_label_var = tk.StringVar()
         self.mp_label_var = tk.StringVar()
@@ -212,10 +213,19 @@ class RpgGui(ttk.Frame):
         attr_frame.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(10, 0))
 
         self.stat_labels = {}
-        for i, stat_key in enumerate(['strength', 'intelligence', 'luck', 'agility']):
-            self.stat_labels[stat_key] = ttk.Label(attr_frame, text=f"{self._(stat_key)}:")
-            self.stat_labels[stat_key].grid(row=i, column=0, sticky="w")
-            ttk.Label(attr_frame, textvariable=self.stats_vars[self.player.main_stat] if stat_key == self.player.main_stat.lower() else self.stats_vars[stat_key]).grid(row=i, column=1, sticky="w", padx=5)
+        # Internal keys must match game_data.py and character.py ('Stärke', 'Agilität', etc.)
+        internal_stat_keys = ['Stärke', 'Agilität', 'Intelligenz', 'Glück']
+
+        for i, internal_key in enumerate(internal_stat_keys):
+            # The translation key is the lowercase version from the mapping
+            translation_key = {"Stärke": "strength", "Agilität": "agility", "Intelligenz": "intelligence", "Glück": "luck"}.get(internal_key)
+
+            # Create and store the label with the German key
+            self.stat_labels[internal_key] = ttk.Label(attr_frame, text=f"{self._(translation_key)}:")
+            self.stat_labels[internal_key].grid(row=i, column=0, sticky="w")
+
+            # Create the value label linked to the correct StringVar via the German key
+            ttk.Label(attr_frame, textvariable=self.stats_vars[internal_key]).grid(row=i, column=1, sticky="w", padx=5)
 
 
         resources_frame = ttk.LabelFrame(char_frame, text=self._("resources"), padding="5")
@@ -380,14 +390,18 @@ class RpgGui(ttk.Frame):
         self.char_gold_var.set(format_currency(self.player.copper))
         total_stats = self.player.get_total_stats()
 
+        # Re-translate stat labels every update
         stat_map = {"Stärke": "strength", "Agilität": "agility", "Intelligenz": "intelligence", "Glück": "luck"}
+        for internal_key, label in self.stat_labels.items():
+            translation_key = stat_map.get(internal_key)
+            if translation_key:
+                label.config(text=f"{self._(translation_key)}:")
+
         for stat, var in self.stats_vars.items():
             base = self.player.attributes.get(stat, 0)
             total = total_stats.get(stat, 0)
             bonus = total - base
             var.set(f"{total} ({base} {'+' if bonus >= 0 else ''}{bonus})") if bonus != 0 else var.set(total)
-            # Update the label text itself
-            self.stat_labels[stat.lower()].config(text=f"{self._(stat_map.get(stat, stat.lower()))}:")
 
         for slot, var in self.equipment_vars.items():
             item = self.player.equipment.get(slot)
