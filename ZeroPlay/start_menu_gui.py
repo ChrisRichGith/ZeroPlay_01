@@ -41,7 +41,7 @@ class StartMenu(ttk.Frame):
         center_frame = ttk.Frame(self, padding=20)
         center_frame.pack(expand=True)
 
-        ttk.Label(center_frame, text="Chronicle of the Idle Hero", font=("Helvetica", 20, "bold")).grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        ttk.Label(center_frame, text=self._("game_title"), font=("Helvetica", 20, "bold")).grid(row=0, column=0, columnspan=2, pady=(0, 20))
 
         load_frame = ttk.LabelFrame(center_frame, text=self._('load_save'), padding=10)
         load_frame.grid(row=1, column=0, sticky="ns", padx=(0, 10))

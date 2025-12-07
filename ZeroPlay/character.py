@@ -5,6 +5,7 @@ Defines the Character class, which manages the player's stats, inventory, and eq
 import random
 from item import Item
 from game_data import CLASSES
+from translations import get_text
 
 class Character:
     """Manages character attributes, inventory, and equipment."""
@@ -164,14 +165,20 @@ class Character:
         self.update_derived_stats(heal_on_update=True) # Recalculate LP/MP and heal on level up
         return stat_increases
 
+    def _(self, key, **kwargs):
+        """Alias for get_text for shorter calls, with formatting."""
+        # The character object might be created before a language is set, default to 'de'
+        lang = getattr(self, 'language', 'de')
+        return get_text(lang, key).format(**kwargs)
+
     def use_item(self, item_index):
         """Uses a consumable item from the inventory."""
         if not (0 <= item_index < len(self.inventory)):
-            return False, "Ungültiger Gegenstand."
+            return False, self._("error_invalid_item")
 
         item = self.inventory[item_index]
         if item.item_type != "Verbrauchsgut":
-            return False, "Dieser Gegenstand kann nicht benutzt werden."
+            return False, self._("cannot_use_item")
 
         effect = item.stats_boost
         if "LP" in effect:
@@ -184,7 +191,7 @@ class Character:
             self.current_wut = min(self.max_wut, self.current_wut + effect["Wut"])
 
         self.inventory.pop(item_index)
-        return True, f"{item.name} benutzt."
+        return True, self._("item_used_success", item_name=item.name)
 
     def take_damage(self, damage):
         """Reduces the character's HP by a given amount."""
@@ -238,6 +245,7 @@ class Character:
     def add_cheat_resources(self):
         """Adds 100 of each resource for testing and flags the character."""
         self.cheat_activated = True
+        # Use the internal, untranslated keys for game logic
         self.add_resource("Eisenerz", 100)
         self.add_resource("Juwel", 100)
 
@@ -299,8 +307,11 @@ class Character:
             if item_to_equip.armor_type:
                 allowed_armor = CLASSES[self.klasse].get("allowed_armor", [])
                 if item_to_equip.armor_type not in allowed_armor:
-                    # In a real GUI, we would show a message. For now, just prevent equipping.
-                    print(f"Deine Klasse ({self.klasse}) kann '{item_to_equip.armor_type}' nicht tragen.")
+                    # In a real GUI, this message would be shown.
+                    # We will add it to the pending messages to be displayed if possible.
+                    message = self._("error_class_cannot_wear", char_class=self.klasse, armor_type=item_to_equip.armor_type)
+                    # For now, print to console as a fallback.
+                    print(message)
                     return
 
             slot = item_to_equip.slot

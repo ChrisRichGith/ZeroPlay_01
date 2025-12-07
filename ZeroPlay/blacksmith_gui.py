@@ -85,8 +85,12 @@ class BlacksmithWindow(tk.Toplevel):
             else:
                 self.equip_listbox.insert(tk.END, f"[{display_slot}] {self._('empty_slot')}")
 
-        resources_text = self._("your_resources") + "\n" + "\n".join([f"{name}: {amount}" for name, amount in self.player.resources.items()])
-        self.player_resources_label.config(text=resources_text)
+        resources_text_list = [self._("your_resources")]
+        for name, amount in self.player.resources.items():
+            resource_key = f"resource_{name.lower().replace(' ', '_')}"
+            translated_name = self._(resource_key)
+            resources_text_list.append(f"{translated_name}: {amount}")
+        self.player_resources_label.config(text="\n".join(resources_text_list))
         self.update_details()
 
     def on_item_select(self, event=None):
@@ -117,7 +121,7 @@ class BlacksmithWindow(tk.Toplevel):
         self.current_stats_label.config(text=stats_text)
 
         if self.selected_item.upgrade_level >= max_upgrades:
-            max_stats_text = self._("current_stats") + " (Max):\n" + "\n".join([f"  {self._(stat.lower())}: {val} (Max)" for stat, val in self.selected_item.stats_boost.items()])
+            max_stats_text = self._("current_stats") + f" ({self._('max_stat_indicator')}):\n" + "\n".join([f"  {self._(stat.lower())}: {val} ({self._('max_stat_indicator')})" for stat, val in self.selected_item.stats_boost.items()])
             self.current_stats_label.config(text=max_stats_text)
             self.next_stats_label.config(text=self._("max_level_reached"))
             self.cost_label.config(text="")
@@ -129,8 +133,12 @@ class BlacksmithWindow(tk.Toplevel):
         self.next_stats_label.config(text=next_stats_text)
 
         cost = self.blacksmith.get_upgrade_cost(self.selected_item)
-        cost_text = self._("cost") + "\n" + "\n".join([f"  {name}: {amount}" for name, amount in cost.items()])
-        self.cost_label.config(text=cost_text)
+        cost_text_list = [self._("cost")]
+        for name, amount in cost.items():
+            resource_key = f"resource_{name.lower().replace(' ', '_')}"
+            translated_name = self._(resource_key)
+            cost_text_list.append(f"  {translated_name}: {amount}")
+        self.cost_label.config(text="\n".join(cost_text_list))
 
         if self.blacksmith.can_afford_upgrade(self.player.resources, cost):
             self.upgrade_button.config(state=tk.NORMAL)
