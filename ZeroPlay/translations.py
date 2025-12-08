@@ -28,6 +28,11 @@ TEXTS = {
         "resource_jewel": "Juwel",
         "item_type_equipment": "Ausrüstung",
         "item_type_consumable": "Verbrauchsgut",
+        "armor_type_chain": "Kette",
+        "armor_type_plate": "Platte",
+        "armor_type_cloth": "Stoff",
+        "armor_type_leather": "Leder",
+
 
         # Splash Screen
         "language_german": "Deutsch",
@@ -54,14 +59,14 @@ TEXTS = {
         "class_selection_title": "Charaktererstellung",
         "enter_name": "Gib deinen Namen ein:",
         "select_class": "Wähle deine Klasse:",
-        "warrior": "Krieger",
-        "mage": "Magier",
-        "rogue": "Schurke",
         "confirm": "Bestätigen",
         "back": "Zurück",
-        "warrior_desc": "Ein Meister des Nahkampfs, verlässt sich auf Stärke und Zähigkeit.",
-        "mage_desc": "Ein Gelehrter der arkanen Künste, dessen Macht von seiner Intelligenz abhängt.",
-        "rogue_desc": "Ein geschickter Halunke, der Agilität nutzt, um seine Feinde auszutricksen.",
+        "class_warrior_name": "Krieger",
+        "class_mage_name": "Magier",
+        "class_rogue_name": "Schurke",
+        "class_warrior_desc": "Ein Meister des Nahkampfs, verlässt sich auf Stärke und Zähigkeit.",
+        "class_mage_desc": "Ein Gelehrter der arkanen Künste, dessen Macht von seiner Intelligenz abhängt.",
+        "class_rogue_desc": "Ein geschickter Halunke, der Agilität nutzt, um seine Feinde auszutricksen.",
 
         # RPG GUI (Main Game)
         "char_status": "Charakterstatus",
@@ -133,6 +138,42 @@ TEXTS = {
         "item_used_success": "{item_name} benutzt.",
         "error_invalid_item": "Ungültiger Gegenstand.",
         "error_class_cannot_wear": "Deine Klasse ({char_class}) kann '{armor_type}' nicht tragen.",
+        "consumable_effect": "Stellt {value} {effect} wieder her",
+
+        # Item Rarities
+        "rarity_poor": "Schlecht",
+        "rarity_common": "Gewöhnlich",
+        "rarity_uncommon": "Ungewöhnlich",
+        "rarity_rare": "Selten",
+        "rarity_epic": "Episch",
+        "rarity_legendary": "Legendär",
+        "rarity_mythic": "Mythisch",
+
+        # Item Names
+        "item_sword": "Schwert",
+        "item_staff": "Stab",
+        "item_dagger": "Dolch",
+        "item_chain_hood": "Kettenhaube",
+        "item_cloth_hat": "Stoffhut",
+        "item_leather_cowl": "Lederkapuze",
+        "item_plate_armor": "Plattenpanzer",
+        "item_cloth_robe": "Stoffrobe",
+        "item_leather_jerkin": "Lederwams",
+
+        # Potions
+        "potion_small_healing": "Kleiner Heiltrank",
+        "potion_healing": "Heiltrank",
+        "potion_large_healing": "Großer Heiltrank",
+        "potion_superior_healing": "Überragender Heiltrank",
+        "potion_small_mana": "Kleiner Manatrank",
+        "potion_mana": "Manatrank",
+        "potion_large_mana": "Großer Manatrank",
+        "potion_superior_mana": "Überragender Manatrank",
+        "potion_small_energy": "Kleiner Energietrank",
+        "potion_energy": "Energietrank",
+        "potion_small_rage": "Kleiner Wuttrank",
+        "potion_rage": "Wuttrank",
+
 
         # Quests
         "quest_slimes_name": "Töte alle Schleime",
@@ -149,6 +190,39 @@ TEXTS = {
         "quest_goblins_name": "Finde heraus, warum Goblins immer so schlechte Laune haben",
         "quest_turtle_name": "Eskortiere eine sehr langsame Schildkröte über eine sehr breite Straße",
         "quest_ceremony_name": "Störe eine wichtige Zeremonie durch lautes Kauen",
+        # Procedural Quests
+        "quest_location_1": "in den düsteren Wäldern",
+        "quest_location_2": "zu den vergessenen Ruinen",
+        "quest_location_3": "durch die sengende Wüste",
+        "quest_location_4": "über die eisigen Gipfel",
+        "quest_location_5": "tief in die Goblin-Minen",
+        "quest_action_prefix_1": "Dort angekommen, musst du",
+        "quest_action_prefix_2": "Deine Aufgabe ist es,",
+        "quest_action_prefix_3": "Im Zielgebiet angekommen, gilt es,",
+        "quest_return_1": "Nach getaner Arbeit machst du dich auf den Rückweg.",
+        "quest_return_2": "Die Aufgabe ist erfüllt und du trittst die Heimreise an.",
+        "quest_return_3": "Erschöpft, aber erfolgreich, beginnst du den Rückmarsch.",
+
+        # Class Events
+        "warrior_event_1": "Du schmetterst deinen Schild in einen Gegner.",
+        "warrior_event_2": "Mit einem mächtigen Hieb spaltest du einen Helm.",
+        "warrior_event_3": "Du parierst einen Angriff und konterst.",
+        "warrior_event_4": "Ein lauter Schlachtruf lässt deine Feinde erzittern.",
+        "warrior_event_5": "Du trittst eine Kiste auf und findest eine Münze.",
+        "warrior_event_6": "Dein Schwert trifft zielsicher.",
+        "mage_event_1": "Ein Feuerball schlägt zischend in die Gegnerreihen ein.",
+        "mage_event_2": "Du wirkst einen Schutzzauber, der einen Hieb abwehrt.",
+        "mage_event_3": "Eissplitter frieren einen Angreifer an Ort und Stelle fest.",
+        "mage_event_4": "Ein Kettenblitz springt von einem Feind zum nächsten.",
+        "mage_event_5": "Du murmelst eine arkane Formel und stärkst deine Waffe.",
+        "mage_event_6": "Du findest eine alte Schriftrolle.",
+        "rogue_event_1": "Du springst aus den Schatten und landest einen kritischen Treffer.",
+        "rogue_event_2": "Mit einem schnellen Schnitt entwaffnest du einen Gegner.",
+        "rogue_event_3": "Du wirfst einen Dolch präzise auf ein entferntes Ziel.",
+        "rogue_event_4": "Eine Rauchbombe sorgt für Verwirrung.",
+        "rogue_event_5": "Du knackst eine kleine Schatulle und findest Gold.",
+        "rogue_event_6": "Du weichst einer Falle geschickt aus.",
+
 
         # Trader
         "upgrade_inventory": "Inventar erweitern",
@@ -181,6 +255,14 @@ TEXTS = {
         "max_level_reached": "Maximale Stufe erreicht",
         "upgrade_success_title": "Erfolg!",
         "max_stat_indicator": "(Max)",
+
+        # Bosses
+        "boss_goblin_king": "Goblin König",
+        "boss_stone_golem": "Steingolem",
+        "boss_chimera_matriarch": "Chimären-Matriarchin",
+        "boss_necromancer_lord": "Nekromanten-Lord",
+        "boss_ice_giant_chief": "Eisriesen-Häuptling",
+        "boss_ancient_dragon": "Alter Drache",
 
         # Boss Arena
         "player": "Spieler",
@@ -248,6 +330,10 @@ TEXTS = {
         "resource_jewel": "Jewel",
         "item_type_equipment": "Equipment",
         "item_type_consumable": "Consumable",
+        "armor_type_chain": "Chain",
+        "armor_type_plate": "Plate",
+        "armor_type_cloth": "Cloth",
+        "armor_type_leather": "Leather",
 
         # Splash Screen
         "language_german": "Deutsch",
@@ -274,14 +360,15 @@ TEXTS = {
         "class_selection_title": "Character Creation",
         "enter_name": "Enter your name:",
         "select_class": "Select your class:",
-        "warrior": "Warrior",
-        "mage": "Mage",
-        "rogue": "Rogue",
         "confirm": "Confirm",
         "back": "Back",
-        "warrior_desc": "A master of melee combat, relying on strength and toughness.",
-        "mage_desc": "A scholar of the arcane arts, whose power depends on their intelligence.",
-        "rogue_desc": "A skillful scoundrel who uses agility to outmaneuver their foes.",
+        "class_warrior_name": "Warrior",
+        "class_mage_name": "Mage",
+        "class_rogue_name": "Rogue",
+        "class_warrior_desc": "A master of melee combat, relying on strength and toughness.",
+        "class_mage_desc": "A scholar of the arcane arts, whose power depends on their intelligence.",
+        "class_rogue_desc": "A skillful scoundrel who uses agility to outmaneuver their foes.",
+
 
         # RPG GUI (Main Game)
         "char_status": "Character Status",
@@ -353,6 +440,41 @@ TEXTS = {
         "item_used_success": "Used {item_name}.",
         "error_invalid_item": "Invalid item.",
         "error_class_cannot_wear": "Your class ({char_class}) cannot wear '{armor_type}'.",
+        "consumable_effect": "Restores {value} {effect}",
+
+        # Item Rarities
+        "rarity_poor": "Poor",
+        "rarity_common": "Common",
+        "rarity_uncommon": "Uncommon",
+        "rarity_rare": "Rare",
+        "rarity_epic": "Epic",
+        "rarity_legendary": "Legendary",
+        "rarity_mythic": "Mythic",
+
+        # Item Names
+        "item_sword": "Sword",
+        "item_staff": "Staff",
+        "item_dagger": "Dagger",
+        "item_chain_hood": "Chain Hood",
+        "item_cloth_hat": "Cloth Hat",
+        "item_leather_cowl": "Leather Cowl",
+        "item_plate_armor": "Plate Armor",
+        "item_cloth_robe": "Cloth Robe",
+        "item_leather_jerkin": "Leather Jerkin",
+
+        # Potions
+        "potion_small_healing": "Small Healing Potion",
+        "potion_healing": "Healing Potion",
+        "potion_large_healing": "Large Healing Potion",
+        "potion_superior_healing": "Superior Healing Potion",
+        "potion_small_mana": "Small Mana Potion",
+        "potion_mana": "Mana Potion",
+        "potion_large_mana": "Large Mana Potion",
+        "potion_superior_mana": "Superior Mana Potion",
+        "potion_small_energy": "Small Energy Potion",
+        "potion_energy": "Energy Potion",
+        "potion_small_rage": "Small Rage Potion",
+        "potion_rage": "Rage Potion",
 
         # Quests
         "quest_slimes_name": "Kill all slimes",
@@ -369,6 +491,38 @@ TEXTS = {
         "quest_goblins_name": "Find out why goblins are always in a bad mood",
         "quest_turtle_name": "Escort a very slow turtle across a very wide road",
         "quest_ceremony_name": "Disrupt an important ceremony by chewing loudly",
+        # Procedural Quests
+        "quest_location_1": "in the gloomy forests",
+        "quest_location_2": "to the forgotten ruins",
+        "quest_location_3": "through the scorching desert",
+        "quest_location_4": "across the icy peaks",
+        "quest_location_5": "deep into the goblin mines",
+        "quest_action_prefix_1": "Once there, you must",
+        "quest_action_prefix_2": "Your task is to",
+        "quest_action_prefix_3": "Arriving at the destination, you have to",
+        "quest_return_1": "With the work done, you start your journey back.",
+        "quest_return_2": "The task is complete, and you begin the journey home.",
+        "quest_return_3": "Exhausted but successful, you start the march back.",
+
+        # Class Events
+        "warrior_event_1": "You smash your shield into an opponent.",
+        "warrior_event_2": "With a mighty blow, you split a helmet.",
+        "warrior_event_3": "You parry an attack and counter.",
+        "warrior_event_4": "A loud battle cry makes your enemies tremble.",
+        "warrior_event_5": "You kick open a chest and find a coin.",
+        "warrior_event_6": "Your sword hits its mark.",
+        "mage_event_1": "A fireball hisses into the enemy ranks.",
+        "mage_event_2": "You cast a protective spell that deflects a blow.",
+        "mage_event_3": "Ice shards freeze an attacker in place.",
+        "mage_event_4": "A chain lightning jumps from one enemy to the next.",
+        "mage_event_5": "You murmur an arcane formula and strengthen your weapon.",
+        "mage_event_6": "You find an ancient scroll.",
+        "rogue_event_1": "You leap from the shadows and land a critical hit.",
+        "rogue_event_2": "With a swift cut, you disarm an opponent.",
+        "rogue_event_3": "You throw a dagger with precision at a distant target.",
+        "rogue_event_4": "A smoke bomb causes confusion.",
+        "rogue_event_5": "You pick a small lockbox and find gold.",
+        "rogue_event_6": "You skillfully evade a trap.",
 
         # Trader
         "upgrade_inventory": "Upgrade Inventory",
@@ -401,6 +555,14 @@ TEXTS = {
         "max_level_reached": "Max level reached",
         "upgrade_success_title": "Success!",
         "max_stat_indicator": "(Max)",
+
+        # Bosses
+        "boss_goblin_king": "Goblin King",
+        "boss_stone_golem": "Stone Golem",
+        "boss_chimera_matriarch": "Chimera Matriarch",
+        "boss_necromancer_lord": "Necromancer Lord",
+        "boss_ice_giant_chief": "Ice Giant Chief",
+        "boss_ancient_dragon": "Ancient Dragon",
 
         # Boss Arena
         "player": "Player",
@@ -446,10 +608,18 @@ TEXTS = {
     }
 }
 
-def get_text(lang, key):
+def get_text(lang, key, **kwargs):
     """
     Returns the translated text for a given key and language.
-    Falls back to German if the key is not found in the selected language.
+    Falls back to English if the key is not found in the selected language.
+    Supports simple string formatting.
     """
-    # Fallback to English if the key is missing in the current language
-    return TEXTS.get(lang, TEXTS["en"]).get(key, TEXTS["en"].get(key, key))
+    # Fallback to English if the language or key is missing
+    text = TEXTS.get(lang, TEXTS["en"]).get(key, key)
+    if kwargs:
+        try:
+            return text.format(**kwargs)
+        except (KeyError, ValueError) as e:
+            print(f"Translation format error for key '{key}' in lang '{lang}': {e}")
+            return f"FMT_ERR:{key}"
+    return text
