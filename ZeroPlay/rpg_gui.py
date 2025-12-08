@@ -174,13 +174,7 @@ class RpgGui(ttk.Frame):
         for key, cmd in buttons.items():
             button = ttk.Button(actions_frame, text=self._(key), command=cmd)
             button.pack(fill=tk.X, pady=5)
-            # Use the original names for consistency
-            if key == "start_quest":
-                self.quest_button = button
-            elif key == "start_auto_quest":
-                self.auto_quest_button = button
-            else:
-                setattr(self, f"{key.replace('visit_', '')}_button", button)
+            setattr(self, f"{key.replace('visit_', '')}_button", button)
 
         self.progress_bar = ttk.Progressbar(actions_frame, orient='horizontal', mode='determinate', length=120)
         self.progress_bar.pack(fill=tk.X, pady=(10, 5))
