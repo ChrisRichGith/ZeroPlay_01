@@ -16,14 +16,15 @@ class ClassSelectionFrame(ttk.Frame):
         self.callbacks = callbacks
         self.language = language
         self.player_name = ""
-        self.selected_class = "Krieger"
+        # Default to the first class key from game_data
+        self.selected_class_key = list(CLASSES.keys())[0]
         self.create_widgets()
         self.class_listbox.select_set(0)
         self.show_class_info()
 
-    def _(self, key):
+    def _(self, key, **kwargs):
         """Alias for get_text for shorter calls."""
-        return get_text(self.language, key)
+        return get_text(self.language, key, **kwargs)
 
     def create_widgets(self):
         """Creates the widgets for the class selection frame."""
@@ -50,9 +51,8 @@ class ClassSelectionFrame(ttk.Frame):
         left_frame.columnconfigure(0, weight=1)
 
         self.class_listbox = tk.Listbox(left_frame, exportselection=False, height=len(CLASSES))
-        self.class_map = {"Krieger": "warrior", "Magier": "mage", "Schurke": "rogue"}
-        for class_name in CLASSES.keys():
-            self.class_listbox.insert(tk.END, self._(self.class_map.get(class_name, "")))
+        for class_key, class_data in CLASSES.items():
+            self.class_listbox.insert(tk.END, self._(class_data["name_key"]))
         self.class_listbox.grid(row=0, column=0, sticky="nsew")
         self.class_listbox.bind('<<ListboxSelect>>', self.show_class_info)
 
@@ -66,7 +66,7 @@ class ClassSelectionFrame(ttk.Frame):
         self.image_label.grid(row=0, column=0, sticky="nsew")
         self.character_photo = None
 
-        self.info_frame = ttk.LabelFrame(right_frame, text="Info", padding="10")
+        self.info_frame = ttk.LabelFrame(right_frame, text=self._("attributes"), padding="10")
         self.info_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
         self.desc_label = ttk.Label(self.info_frame, text="", wraplength=380, justify=tk.LEFT)
         self.desc_label.pack(anchor=tk.W, pady=5)
@@ -88,17 +88,14 @@ class ClassSelectionFrame(ttk.Frame):
         selected_indices = self.class_listbox.curselection()
         if not selected_indices: return
 
-        # Map selected index back to original class name
-        original_class_name = list(CLASSES.keys())[selected_indices[0]]
-        self.selected_class = original_class_name
+        self.selected_class_key = list(CLASSES.keys())[selected_indices[0]]
+        class_data = CLASSES[self.selected_class_key]
 
-        class_data = CLASSES[original_class_name]
-        self.desc_label.config(text=self._(original_class_name.lower() + "_desc"))
+        self.desc_label.config(text=self._(class_data["desc_key"]))
 
-        attr_text = f"{self._('attributes')}:\n"
-        stat_map = {"Stärke": "strength", "Agilität": "agility", "Intelligenz": "intelligence", "Glück": "luck"}
+        attr_text = ""
         for stat, value in class_data["attributes"].items():
-            translated_stat = self._(stat_map.get(stat, stat))
+            translated_stat = self._(stat) # 'strength' -> 'Stärke'
             attr_text += f"  - {translated_stat:<12}: {value}\n"
         self.attr_label.config(text=attr_text)
         self.confirm_button.config(state=tk.NORMAL)
@@ -111,17 +108,18 @@ class ClassSelectionFrame(ttk.Frame):
                 self.character_photo = ImageTk.PhotoImage(img)
                 self.image_label.config(image=self.character_photo, text="")
             else:
-                self.image_label.config(image="", text="No image available")
+                self.image_label.config(image="", text=self._("image_not_found", path=img_path))
         except Exception as e:
-            self.image_label.config(image="", text=f"Image error:\n{e}")
+            self.image_label.config(image="", text=self._("image_load_error", e=e))
 
     def confirm(self):
         self.player_name = self.name_entry.get().strip()
         if not self.player_name:
-            messagebox.showwarning(self._("error"), self._("enter_name"), parent=self)
+            messagebox.showwarning(self._("warning"), self._("enter_name"), parent=self)
             return
-        if not self.selected_class:
-            messagebox.showwarning(self._("error"), self._("select_class"), parent=self)
+        if not self.selected_class_key:
+            messagebox.showwarning(self._("warning"), self._("select_class"), parent=self)
             return
         if self.callbacks['confirm']:
-            self.callbacks['confirm'](self.player_name, self.selected_class)
+            # Pass the internal, non-translated key
+            self.callbacks['confirm'](self.player_name, self.selected_class_key)
